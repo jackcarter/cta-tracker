@@ -134,13 +134,3 @@ class BusTracker(object):
 		for p in root.findall('prd'):
 			predictions.append(parse_prediction(p))
 		return predictions
-		
-a = BusTracker()
-'''
-print a.get_time()
-print a.get_vehicles(vehicle_ids=['1567'])
-print a.get_routes()
-print a.get_directions('49')
-print a.get_stops('49','Northbound')
-'''
-print a.get_predictions(['17404'], top=1)
