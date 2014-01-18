@@ -4,6 +4,7 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 
 base_url = "http://www.ctabustracker.com/bustime/api/v1/"
+
 def parse_time(xml_timestamp):
 	return datetime.strptime(xml_timestamp, '%Y%m%d %H:%M')
 def parse_time_seconds(xml_timestamp):
@@ -23,6 +24,12 @@ def get_time():
 	d = parse_time_seconds(root.find('tm').text)
 	return d
 
+def run_query(request_string, params):
+	r = requests.get(base_url + request_string, params=params)
+	r.encoding = "utf-8"
+	root = ET.fromstring(r.text)
+	return root
+
 def get_vehicles(vehicle_ids=None, route_ids=None):
 	params = {
 		"key":keys.cta,
@@ -30,9 +37,7 @@ def get_vehicles(vehicle_ids=None, route_ids=None):
 		"rt":",".join(route_ids) if route_ids else None,
 	}
 	request_string = "getvehicles"
-	r = requests.get(base_url + request_string, params=params)
-	r.encoding = "utf-8"
-	root = ET.fromstring(r.text)
+	root = run_query(request_string, params)
 	vehicles = []
 	def parse_vehicle(v):
 		return {
@@ -56,9 +61,7 @@ def get_routes():
 		"key":keys.cta,
 	}
 	request_string = "getroutes"
-	r = requests.get(base_url + request_string, params=params)
-	r.encoding = "utf-8"
-	root = ET.fromstring(r.text)
+	root = run_query(request_string, params)
 	routes = []
 	def parse_route(r):
 		return {
@@ -75,16 +78,35 @@ def get_directions(route):
 		"rt":route,
 	}
 	request_string = "getdirections"
-	r = requests.get(base_url + request_string, params=params)
-	print r.url
-	r.encoding = "utf-8"
-	root = ET.fromstring(r.text)
+	root = run_query(request_string, params)
 	directions = []
 	for d in root.findall('dir'):
 		directions.append(d.text)
 	return directions
 	
+def get_stops(route, direction):
+	params = {
+		"key":keys.cta,
+		"rt":route,
+		"dir":direction,
+	}
+	request_string = "getstops"
+	root = run_query(request_string, params)
+	stops = []
+	def parse_stop(v):
+		return {
+			"stop_id"	:	s.find("stpid").text,
+			"stop_name"	:	s.find("stpnm").text,
+			"latitude"	:	parse_double(s.find("lat").text),
+			"longitude"	:	parse_double(s.find("lon").text),
+		}
+	for s in root.findall('stop'):
+		stops.append(parse_stop(s))
+	return stops
+'''	
 print get_time()
 print get_vehicles(vehicle_ids=['1567'])
 print get_routes()
 print get_directions('49')
+'''
+print get_stops('49','Northbound')
