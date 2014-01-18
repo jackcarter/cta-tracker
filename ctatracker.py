@@ -31,7 +31,6 @@ def get_vehicles(vehicle_ids=None, route_ids=None):
 	}
 	request_string = "getvehicles"
 	r = requests.get(base_url + request_string, params=params)
-	print r.url
 	r.encoding = "utf-8"
 	root = ET.fromstring(r.text)
 	vehicles = []
@@ -51,6 +50,24 @@ def get_vehicles(vehicle_ids=None, route_ids=None):
 	for v in root.findall('vehicle'):
 		vehicles.append(parse_vehicle(v))
 	return vehicles
-	
+
+def get_routes():
+	params = {
+		"key":keys.cta,
+	}
+	request_string = "getroutes"
+	r = requests.get(base_url + request_string, params=params)
+	r.encoding = "utf-8"
+	root = ET.fromstring(r.text)
+	routes = []
+	def parse_route(r):
+		return {
+			"route"		:	r.find("rt").text,
+			"route_name":	r.find("rtnm").text,
+		}
+	for r in root.findall('route'):
+		routes.append(parse_route(r))
+	return routes
 print get_time()
 print get_vehicles(vehicle_ids=['1567'])
+print get_routes()
