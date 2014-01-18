@@ -68,6 +68,23 @@ def get_routes():
 	for r in root.findall('route'):
 		routes.append(parse_route(r))
 	return routes
+
+def get_directions(route):
+	params = {
+		"key":keys.cta,
+		"rt":route,
+	}
+	request_string = "getdirections"
+	r = requests.get(base_url + request_string, params=params)
+	print r.url
+	r.encoding = "utf-8"
+	root = ET.fromstring(r.text)
+	directions = []
+	for d in root.findall('dir'):
+		directions.append(d.text)
+	return directions
+	
 print get_time()
 print get_vehicles(vehicle_ids=['1567'])
 print get_routes()
+print get_directions('49')
