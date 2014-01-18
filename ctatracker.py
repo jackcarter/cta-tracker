@@ -9,8 +9,8 @@ def get_time():
 	params = {"key":keys.cta}
 	request_string = "gettime"
 	r = requests.get(base_url + request_string, params=params)
+	r.encoding = "utf-8"
 	root = ET.fromstring(r.text)
-	print root.find('tm').text
 	d = datetime.strptime(root.find('tm').text, '%Y%m%d %H:%M:%S')
 	print d
 get_time()
