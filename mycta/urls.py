@@ -10,5 +10,4 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 	url(r'^cta/', include('cta.urls', namespace='cta')),
-	url(r'^ajax/', include('ajax.urls')),	
 )
