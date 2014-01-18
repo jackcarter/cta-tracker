@@ -15,7 +15,7 @@ def parse_int(xml_int):
 def get_time():
 	params = {
 		"key":keys.cta,
-		}
+	}
 	request_string = "gettime"
 	r = requests.get(base_url + request_string, params=params)
 	r.encoding = "utf-8"
@@ -23,13 +23,15 @@ def get_time():
 	d = parse_time_seconds(root.find('tm').text)
 	return d
 
-def get_vehicles():
+def get_vehicles(vehicle_ids=None, route_ids=None):
 	params = {
 		"key":keys.cta,
-		"rt":"49",
-		}
+		"vid":",".join(vehicle_ids) if vehicle_ids else None,
+		"rt":",".join(route_ids) if route_ids else None,
+	}
 	request_string = "getvehicles"
 	r = requests.get(base_url + request_string, params=params)
+	print r.url
 	r.encoding = "utf-8"
 	root = ET.fromstring(r.text)
 	vehicles = []
@@ -40,7 +42,7 @@ def get_vehicles():
 			"latitude"			:	parse_double(v.find("lat").text),
 			"longitude"			:	parse_double(v.find("lon").text),
 			"heading"			:	parse_int(v.find("hdg").text),
-			"pattern_id"		:	parse_int(v.find("pid").text),
+			"pattern_id"		:	v.find("pid").text,
 			"route"				:	v.find("rt").text,
 			"destination"		:	v.find("des").text,
 			"pattern_distance"	:	parse_int(v.find("pdist").text),
@@ -51,4 +53,4 @@ def get_vehicles():
 	return vehicles
 	
 print get_time()
-print get_vehicles()
+print get_vehicles(vehicle_ids=['1567'])
