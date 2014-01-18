@@ -1,6 +1,6 @@
 import requests
 import keys
-import datetime
+from datetime import datetime
 import xml.etree.ElementTree as ET
 
 base_url = "http://www.ctabustracker.com/bustime/api/v1/"
@@ -11,4 +11,6 @@ def get_time():
 	r = requests.get(base_url + request_string, params=params)
 	root = ET.fromstring(r.text)
 	print root.find('tm').text
+	d = datetime.strptime(root.find('tm').text, '%Y%m%d %H:%M:%S')
+	print d
 get_time()
