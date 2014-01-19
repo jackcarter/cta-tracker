@@ -20,6 +20,7 @@ class Route(models.Model):
 	route_id = models.CharField(max_length = 8)
 	route_name = models.CharField(max_length = 100)
 	directions = models.ManyToManyField(Direction, blank=True, null=True, through='DirectionToRoute')
+	stops = models.ManyToManyField(Stop, blank=True, null=True, through='StopToRoute')
 
 	def __unicode__(self):
 		return self.route_name
@@ -35,3 +36,11 @@ class DirectionToRoute(models.Model):
 	
 	class Meta:
 		verbose_name = "Direction"
+
+
+class StopToRoute(models.Model):
+	route = models.ForeignKey(Route)
+	stop = models.ForeignKey(Stop)
+
+	class Meta:
+		verbose_name = "Stop"
