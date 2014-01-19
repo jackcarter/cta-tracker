@@ -10,14 +10,14 @@ function initialize() {
 
 function addRoutes(data) {
 	for (var route in data) {
-	    addStop(data[route].route, data[route].route_name);
+	    addRoute(data[route].route, data[route].route_name);
 	  }
 }
 
 function addRoute(routeId, routeName) {
 	$('#route-selector').append($("<option/>", {
 	        value: routeId,
-	        text: routeName
+	        text: routeId + ' - ' + routeName
 	    }));
 }
 
