@@ -13,6 +13,7 @@
 <!-->	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />-->
   <body onload="initialize()" onunload="GUnload()">
 	<div id="map_canvas"></div>
-	<button onclick="Dajaxice.cta.sayhello(my_js_callback);">Click here!</button>
+	<input id="route-selector" type="text"/>
+	<button onclick="Dajaxice.cta.sayhello(my_js_callback, {'route':$('#route-selector').val()});">Click here!</button>
   </body>
 </html>
