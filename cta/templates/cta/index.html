@@ -5,8 +5,10 @@
 	<script type="text/javascript" src="{% static 'cta/map.js' %}"></script>
 	<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
 	{% dajaxice_js_import %}
-	<script type="text/javascript" >function my_js_callback(data){
-	    alert(data.message);
+	<script type="text/javascript" >
+	function my_js_callback(data){
+//		console.log(data);
+		addStops(data);
 	}</script>
 <!-->	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />-->
   <body onload="initialize()" onunload="GUnload()">
