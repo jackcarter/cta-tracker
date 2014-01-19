@@ -58,6 +58,18 @@ class BusTracker(object):
 			vehicles.append(parse_vehicle(v))
 		return vehicles
 
+	def get_directions(self, route):
+		params = {
+			'key':keys.cta,
+			'rt':route,
+		}
+		request_string = 'getdirections'
+		root = self.run_query(request_string, params)
+		directions = []
+		for d in root.findall('dir'):
+			directions.append(d.text)
+		return directions
+			
 	def get_routes(self):
 		params = {
 			'key':keys.cta,
@@ -73,18 +85,6 @@ class BusTracker(object):
 		for r in root.findall('route'):
 			routes.append(parse_route(r))
 		return routes
-
-	def get_directions(self, route):
-		params = {
-			'key':keys.cta,
-			'rt':route,
-		}
-		request_string = 'getdirections'
-		root = self.run_query(request_string, params)
-		directions = []
-		for d in root.findall('dir'):
-			directions.append(d.text)
-		return directions
 	
 	def get_stops(self, route, direction):
 		params = {

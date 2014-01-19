@@ -1,11 +1,37 @@
 from django.db import models
 from django.utils import timezone
 
-class Category(models.Model):
-    title = models.CharField(max_length=100)
 
-class Widget(models.Model):
-    category = models.ForeignKey(Category, null=True, blank=True)
-    title = models.CharField(max_length=100)
-    description = models.CharField(max_length=200, null=True, blank=True)
-    active = models.BooleanField()
+class Stop(models.Model):
+	stop_id = models.CharField(max_length = 8)
+	stop_name = models.CharField(max_length = 100)
+	latitude = models.FloatField()
+	longitude = models.FloatField()
+	
+	def __unicode__(self):
+		return self.stop_name
+
+
+class Direction(models.Model):
+	pass
+	
+
+class Route(models.Model):
+	route_id = models.CharField(max_length = 8)
+	route_name = models.CharField(max_length = 100)
+	directions = models.ManyToManyField(Direction, blank=True, null=True, through='DirectionToRoute')
+
+	def __unicode__(self):
+		return self.route_name
+
+
+class Vehicle(models.Model):
+	pass
+	
+
+class DirectionToRoute(models.Model):
+	route = models.ForeignKey(Route)
+	direction = models.ForeignKey(Direction)
+	
+	class Meta:
+		verbose_name = "Direction"
