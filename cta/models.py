@@ -2,18 +2,8 @@ from django.db import models
 from django.utils import timezone
 
 
-class Stop(models.Model):
-	stop_id = models.CharField(max_length = 8)
-	stop_name = models.CharField(max_length = 100)
-	latitude = models.FloatField()
-	longitude = models.FloatField()
-	
-	def __unicode__(self):
-		return self.stop_name
-
-
 class Direction(models.Model):
-	pass
+	direction = models.CharField(max_length = 40, null=True)
 	
 
 class Route(models.Model):
@@ -24,6 +14,17 @@ class Route(models.Model):
 
 	def __unicode__(self):
 		return self.route_name
+
+
+class Stop(models.Model):
+	route = models.ForeignKey(Route)
+	stop_id = models.CharField(max_length = 8)
+	stop_name = models.CharField(max_length = 100)
+	latitude = models.FloatField()
+	longitude = models.FloatField()
+
+	def __unicode__(self):
+		return self.stop_name
 
 
 class Vehicle(models.Model):

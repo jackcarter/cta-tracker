@@ -4,9 +4,9 @@ import ctatracker
 
 a = ctatracker.BusTracker()
 @dajaxice_register
-def getStops(request, route):
-    return simplejson.dumps(a.get_stops(route,'Eastbound'))
+def get_stops(request, route, direction):
+    return simplejson.dumps(a.get_stops(route, direction))
 
 @dajaxice_register
-def getRoutes(request):
+def get_routes(request):
     return simplejson.dumps(a.get_routes())
