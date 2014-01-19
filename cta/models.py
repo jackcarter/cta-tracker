@@ -4,7 +4,9 @@ from django.utils import timezone
 
 class Direction(models.Model):
 	direction = models.CharField(max_length = 40, null=True)
-	
+
+	def __unicode__(self):
+		return self.direction
 
 class Stop(models.Model):
 	stop_id = models.CharField(max_length = 8)
