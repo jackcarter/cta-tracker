@@ -6,14 +6,37 @@
 	<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
 	{% dajaxice_js_import %}
 	<script type="text/javascript" >
-	function my_js_callback(data){
-//		console.log(data);
+	function getStopsCallback(data){
 		addStops(data);
+	}
+	function getRoutesCallback(data){
+		addRoutes(data);
 	}</script>
-<!-->	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />-->
+	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />
   <body onload="initialize()" onunload="GUnload()">
-	<div id="map_canvas"></div>
-	<input id="route-selector" type="text"/>
-	<button onclick="Dajaxice.cta.sayhello(my_js_callback, {'route':$('#route-selector').val()});">Click here!</button>
+	<div id='inputs'>
+		<button onclick="Dajaxice.cta.getRoutes(getRoutesCallback);">Get Routes</button>
+		<select id="route-selector"><option value="72">72</option><option value="66">66</option></select>
+		<button onclick="Dajaxice.cta.getStops(getStopsCallback, {'route':$('#route-selector').val()});">Place Stops</button>
+		<!--<button onclick="getLocation()">Try It</button>
+		<div id='demo'></div>
+		<script>
+		var x=document.getElementById("demo");
+		function getLocation()
+		  {
+		  if (navigator.geolocation)
+		    {
+		    navigator.geolocation.getCurrentPosition(showPosition);
+		    }
+		  else{x.innerHTML="Geolocation is not supported by this browser.";}
+		  }
+		function showPosition(position)
+		  {
+		  x.innerHTML="Latitude: " + position.coords.latitude + 
+		  "<br>Longitude: " + position.coords.longitude;	
+		  }
+		</script>-->
+	</div>
+		<div id="map_canvas"></div>
   </body>
 </html>

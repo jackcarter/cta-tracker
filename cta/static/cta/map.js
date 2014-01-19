@@ -7,16 +7,26 @@ function initialize() {
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	});
 }
+
+function addRoutes(data) {
+	for (var route in data) {
+	    addStop(data[route].route, data[route].route_name);
+	  }
+}
+
+function addRoute(routeId, routeName) {
+	$('#route-selector').append($("<option/>", {
+	        value: routeId,
+	        text: routeName
+	    }));
+}
+
 function addStops(data) {
-  for (var object in data) {
-    var latLng = new google.maps.LatLng(data[object].latitude, data[object].longitude);
-	console.log(data[object]);
-    var marker = new google.maps.Marker({
-      position: latLng,
-      map: map
-    });
+  for (var stop in data) {
+    addStop(data[stop].latitude, data[stop].longitude);
   }
 }
+
 function addStop(latitude, longitude) {
     var latLng = new google.maps.LatLng(latitude, longitude);
     var marker = new google.maps.Marker({
