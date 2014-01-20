@@ -3,6 +3,10 @@ from django.utils import timezone
 
 
 class Direction(models.Model):
+	def as_dict(self):
+		return {
+			'direction'	:	self.direction,
+		}
 	direction = models.CharField(max_length = 40, null=True)
 
 	def __unicode__(self):
@@ -19,6 +23,12 @@ class Stop(models.Model):
 
 
 class Route(models.Model):
+	def as_dict_no_stops(self):
+		return {
+			'route_id'		:	self.route_id,
+			'route_name'	:	self.route_name,
+#			'directions'	:	self.directions.as_dict(),
+		}
 	route_id = models.CharField(max_length = 8, primary_key=True)
 	route_name = models.CharField(max_length = 100)
 	directions = models.ManyToManyField(Direction, blank=True, null=True)

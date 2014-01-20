@@ -1,16 +1,19 @@
 var map;
-function initialize() {
+function initialize(){
+	//Init google map:
 	var mapDiv = document.getElementById('map_canvas');
 	map = new google.maps.Map(mapDiv, {
 		center: new google.maps.LatLng(41.910277822061, -87.686948776245),
 		zoom: 12,
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	});
+	
+	//Populate routes dropdown:
+	Dajaxice.cta.get_routes(getRoutesCallback);
 }
-
 function addRoutes(data) {
 	for (var route in data) {
-	    addRoute(data[route].route, data[route].route_name);
+	    addRoute(data[route].route_id, data[route].route_name);
 	  }
 }
 
