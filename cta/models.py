@@ -13,7 +13,7 @@ class Direction(models.Model):
 		return self.direction
 
 class Stop(models.Model):
-	stop_id = models.CharField(max_length = 8, primary_key=True)
+	stop_id = models.IntegerField(primary_key=True)
 	stop_name = models.CharField(max_length = 100)
 	latitude = models.FloatField()
 	longitude = models.FloatField()
