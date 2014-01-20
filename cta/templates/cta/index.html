@@ -17,7 +17,7 @@
 	<div id='inputs'>
 		<button onclick="Dajaxice.cta.get_routes(getRoutesCallback);">Get Routes</button>
 		<select id="route-selector"><option value="72">72</option><option value="66">66</option></select>
-		<button onclick="Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Eastbound'});">Place Stops</button>
+		<button onclick="Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Eastbound'});Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Westbound'});">Place Stops</button>
 		<!--<button onclick="getLocation()">Try It</button>
 		<div id='demo'></div>
 		<script>

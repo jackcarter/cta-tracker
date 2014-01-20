@@ -1,4 +1,4 @@
-import ctatracker, cta.cacherouteinfo
+import ctatracker#, cta.cacherouteinfo
 
 a = ctatracker.BusTracker()
 '''
@@ -13,8 +13,8 @@ print a.get_directions('49')
 
 print a.get_predictions(['17404'], top=1)
 '''
-from cta.models import *
+#from cta.models import *
+print a.get_stops('1','Northbound')
 
 
-
-cta.cacherouteinfo.save_routes()
+#cta.cacherouteinfo.save_routes()
