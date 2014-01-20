@@ -27,7 +27,7 @@ class Route(models.Model):
 		return {
 			'route_id'		:	self.route_id,
 			'route_name'	:	self.route_name,
-#			'directions'	:	self.directions.as_dict(),
+			'directions'	:	[d.direction for d in self.directions.all()],
 		}
 	route_id = models.CharField(max_length = 8, primary_key=True)
 	route_name = models.CharField(max_length = 100)
