@@ -11,9 +11,10 @@ function initialize(){
 	//Populate routes dropdown:
 	Dajaxice.cta.get_routes(getRoutesCallback);
 }
-function addRoutes(data) {
-	for (var route in data) {
-	    addRoute(data[route].route_id, data[route].route_name);
+
+function addRoutes(routes) {
+	for (var route in routes) {
+	    addRoute(routes[route].route_id, routes[route].route_name);
 	  }
 }
 
@@ -23,15 +24,40 @@ function addRoute(routeId, routeName) {
 	        text: routeId + ' - ' + routeName
 	    }));
 }
-
-function addStops(data) {
-  for (var stop in data) {
-    addStop(data[stop].latitude, data[stop].longitude);
-  }
+function get_random_color() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.round(Math.random() * 15)];
+    }
+    return color;
 }
 
-function addStop(latitude, longitude) {
-    var latLng = new google.maps.LatLng(latitude, longitude);
+function addPattern(data) {
+	var path = [];
+	for (var point in data) {
+		var latLng = new google.maps.LatLng(data[point].latitude, data[point].longitude);
+		path.push(latLng);
+	}
+	console.log(path);
+	var line = new google.maps.Polyline({
+	    path: path,
+	    strokeColor: get_random_color(),
+	    strokeOpacity: 1.0,
+	    strokeWeight: 2
+	  });
+
+	  line.setMap(map);
+}
+
+function addStops(routeStops) {
+	for (var stop in routeStops) {
+		var latLng = new google.maps.LatLng(routeStops[stop].latitude, routeStops[stop].longitude);
+   		addStop(latLng);
+	}
+}
+
+function addStop(latLng) {
     var marker = new google.maps.Marker({
       position: latLng,
       map: map
