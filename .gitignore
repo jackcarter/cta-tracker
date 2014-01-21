@@ -4,3 +4,4 @@ keys.py
 db.sqlite3
 cta/migrations
 .idea
+tester.py
