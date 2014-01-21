@@ -15,7 +15,7 @@ class BusTracker(object):
 	def parse_double(self, xml_double):
 		return float(xml_double) if xml_double is not None else None
 	def parse_int(self, xml_int):
-		return int(xml_int) if xml_int is not None else None
+		return int(float(xml_int)) if xml_int is not None else None
 
 	def run_query(self, request_string, params):
 		r = requests.get(self.base_url + request_string, params=params)
@@ -58,10 +58,10 @@ class BusTracker(object):
 			vehicles.append(parse_vehicle(v))
 		return vehicles
 
-	def get_directions(self, route):
+	def get_directions(self, route_id):
 		params = {
 			'key':keys.cta,
-			'rt':route,
+			'rt':route_id,
 		}
 		request_string = 'getdirections'
 		root = self.run_query(request_string, params)
@@ -97,7 +97,7 @@ class BusTracker(object):
 		stops = []
 		def parse_stop(v):
 			return {
-				'stop_id'	:	s.find('stpid').text,
+				'stop_id'	:	self.parse_int(s.find('stpid').text),
 				'stop_name'	:	s.find('stpnm').text,
 				'latitude'	:	self.parse_double(s.find('lat').text),
 				'longitude'	:	self.parse_double(s.find('lon').text),
@@ -105,6 +105,44 @@ class BusTracker(object):
 		for s in root.findall('stop'):
 			stops.append(parse_stop(s))
 		return stops
+
+	def get_patterns(self, route_id=None, pattern_ids=None):
+		params = {
+			'key'	:	keys.cta,
+			'pid'	:	','.join(pattern_ids) if pattern_ids else None,
+			'rt'	:	route_id if route_id else None,
+		}
+		request_string = 'getpatterns'
+		root = self.run_query(request_string, params)
+		patterns = []
+		def parse_point(point):
+			if point.find('typ').text == 'S': #S means it's a stop
+				return {
+					'sequence'			:	self.parse_int(point.find('seq').text),
+					'type'				:	point.find('typ').text,
+					'stop_id'			:	self.parse_int(point.find('stpid').text),
+					'stop_name'			:	point.find('stpnm').text,
+					'point_distance'	:	self.parse_double(point.find('pdist').text),
+					'latitude'			:	self.parse_double(point.find('lat').text),
+					'longitude'			:	self.parse_double(point.find('lon').text),
+				}
+			else: #It's a waypoint (type='W'; there's no stpid/stpnm/pdist)
+				return {
+					'sequence'			:	self.parse_int(point.find('seq').text),
+					'type'				:	point.find('typ').text,
+					'latitude'			:	self.parse_double(point.find('lat').text),
+					'longitude'			:	self.parse_double(point.find('lon').text),
+				}
+		def parse_pattern(pattern):
+			return {
+				'pattern_id'		:	self.parse_int(pattern.find('pid').text),
+				'length'			:	self.parse_int(pattern.find('ln').text),
+				'route_direction'	:	pattern.find('rtdir').text,
+				'point'				:	[parse_point(point) for point in pattern.findall('pt')],
+			}
+		for pattern in root.findall('ptr'):
+			patterns.append(parse_pattern(pattern))
+		return patterns
 
 	def get_predictions(self, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
 		params = {
@@ -121,7 +159,7 @@ class BusTracker(object):
 			return {
 				'timestamp'			:	self.parse_time(p.find('tmstmp').text),
 				'type'				:	p.find('typ').text,
-				'stop_id'			:	p.find('stpid').text,
+				'stop_id'			:	self.parse_int(p.find('stpid').text),
 				'stop_name'			:	p.find('stpnm').text,
 				'vehicle_id'		:	p.find('vid').text,
 				'distance_to_stop'	:	self.parse_int(p.find('dstp').text),

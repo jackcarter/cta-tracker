@@ -13,6 +13,13 @@ class Direction(models.Model):
 		return self.direction
 
 class Stop(models.Model):
+	def as_dict(self):
+		return {
+			'stop_id'	:	self.stop_id,
+			'stop_name'	:	self.stop_name,
+			'latitude'	:	self.latitude,
+			'longitude'	:	self.longitude,
+		}
 	stop_id = models.IntegerField(primary_key=True)
 	stop_name = models.CharField(max_length = 100)
 	latitude = models.FloatField()
