@@ -5,7 +5,7 @@ a = ctatracker.BusTracker()
 
 def save_routes():
 	routes = a.get_routes()
-	for route in routes[80:]:
+	for route in routes:
 		route_obj =  Route(
 			route_id=route['route'],
 			route_name=route['route_name'],
