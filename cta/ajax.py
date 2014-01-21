@@ -8,11 +8,8 @@ a = ctatracker.BusTracker()
 def get_routes_from_cache():
 	return [route.as_dict_no_stops() for route in Route.objects.all()]
 
-def get_stops_from_cache(route, direction=None):
-	if direction is None:
-		stops = Stop.objects.filter(stoptoroute__route_id=route)
-	else:
-		stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
+def get_stops_from_cache(route, direction):
+	stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
 	return [stop.as_dict() for stop in stops]
 
 @dajaxice_register

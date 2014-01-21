@@ -2,28 +2,15 @@
 {% load dajaxice_templatetags %}
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 	<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
-	<script type="text/javascript" src="{% static 'cta/map.js' %}"></script>
-	<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
 	{% dajaxice_js_import %}
-	<script type="text/javascript" >
-	function getStopsCallback(data){
-		addStops(data);
-	}
-	function getRoutesCallback(data){
-		addRoutes(data);
-	}
-	function getStops(){
-		Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Eastbound'});
-		Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Westbound'});
-		Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Northbound'});
-		Dajaxice.cta.get_stops(getStopsCallback, {'route':$('#route-selector').val(), 'direction':'Southbound'});
-	}
-	</script>
+	<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
+	<script type="text/javascript" src="{% static 'cta/map.js' %}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />
   <body onload="initialize()" onunload="GUnload()">
 	<div id='inputs'>
 		<select id="route-selector"></select>
 		<button onclick="getStops();">Place Stops</button>
+		<button onclick="getPatterns();">Place Patterns</button>
 		<!--<button onclick="getLocation()">Try It</button>
 		<div id='demo'></div>
 		<script>
