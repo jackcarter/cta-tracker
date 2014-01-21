@@ -1,17 +1,5 @@
 "use strict";
 var map;
-function initialize() {
-	//Init google map:
-	var mapDiv = document.getElementById('map_canvas');
-	map = new google.maps.Map(mapDiv, {
-		center: new google.maps.LatLng(41.910277822061, -87.686948776245),
-		zoom: 12,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
-	});
-	
-	//Populate routes dropdown:
-	Dajaxice.cta.get_routes(addRoutes);
-}
 
 function addRoutes(routes) {
 	var route;
@@ -25,6 +13,10 @@ function addRoute(routeId, routeName) {
 			value: routeId,
 			text: routeId + ' - ' + routeName
 		}));
+}
+
+function getRoutes() {
+	Dajaxice.cta.get_routes(addRoutes);
 }
 
 function get_random_color() {
@@ -63,6 +55,10 @@ function addPatterns(patterns) {
 	}
 }
 
+function getPatterns(){
+	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
+}
+
 function addStop(latLng) {
 	var marker = new google.maps.Marker({
 	  position: latLng,
@@ -85,6 +81,15 @@ function getStops(){
 	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':'Southbound'});
 }
 
-function getPatterns(){
-	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
+function initialize() {
+	//Init google map:
+	var mapDiv = document.getElementById('map_canvas');
+	map = new google.maps.Map(mapDiv, {
+		center: new google.maps.LatLng(41.910277822061, -87.686948776245),
+		zoom: 12,
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	});
+	
+	//Populate routes dropdown:
+	getRoutes();
 }
