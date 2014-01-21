@@ -39,23 +39,28 @@ function get_random_color() {
 function addPattern(data) {
 	var path = [];
 	var point;
-	for (point in data) {
-		var latLng = new google.maps.LatLng(data[point].latitude, data[point].longitude);
+	var latLng;
+	
+	for (point in data['point']) {
+		latLng = new google.maps.LatLng(data['point'][point].latitude, data['point'][point].longitude);
 		path.push(latLng);
 	}
-	console.log(path);
+
 	var line = new google.maps.Polyline({
 		path: path,
 		strokeColor: get_random_color(),
-		strokeOpacity: 1.0,
-		strokeWeight: 2
+		strokeOpacity: 0.5,
+		strokeWeight: 4
 	  });
 
 	  line.setMap(map);
 }
 
-function addPatterns(data) {
-	console.log(data);
+function addPatterns(patterns) {
+	var pattern;
+	for (pattern in patterns) {
+		addPattern(patterns[pattern]);
+	}
 }
 
 function addStop(latLng) {
