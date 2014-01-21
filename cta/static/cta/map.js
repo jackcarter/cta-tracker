@@ -1,5 +1,6 @@
 "use strict";
 var map;
+var markers;
 
 function addRoutes(routes) {
 	var route;
@@ -32,9 +33,15 @@ function addPattern(data) {
 	var path = [];
 	var point;
 	var latLng;
-	
-	for (point in data['point']) {
-		latLng = new google.maps.LatLng(data['point'][point].latitude, data['point'][point].longitude);
+	var points = data['point']
+	var i;
+
+	for (var i=0; i<points.length; i++) {
+		console.log(points[i]);
+		if (points[i].type === 'S') {
+			addStop(points[i])
+		}
+		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
 		path.push(latLng);
 	}
 
@@ -59,18 +66,25 @@ function getPatterns(){
 	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
 }
 
-function addStop(latLng) {
+function addStop(stop) {
+	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude);
+	console.log(stop);
 	var marker = new google.maps.Marker({
 	  position: latLng,
-	  map: map
+	  map: map,
+	  icon: {
+	  	path: google.maps.SymbolPath.CIRCLE,
+	  	scale: 3,
+		strokeColor: 'black',
+	  },
 	});
 }
 
 function addStops(routeStops) {
 	var stop;
-	for (stop in routeStops) {
-		var latLng = new google.maps.LatLng(routeStops[stop].latitude, routeStops[stop].longitude);
-		addStop(latLng);
+	var i;
+	for (var i=0; i<routeStops.length; i++) {
+		addStop(routeStops[i]);
 	}
 }
 
