@@ -63,35 +63,52 @@ function addPatterns(patterns) {
 	}
 }
 
-function getPatterns(){
+function getPatterns() {
 	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
+}
+
+function addPredictions(predictions) {
+	var prediction;
+	for (prediction in predictions) {
+		console.log(prediction);
+	}
+}
+
+function getPredictions(stop_id) {
+	Dajaxice.cta.get_predictions(addPredictions, {'stop_ids':[].push(stop_id)});
 }
 
 function addStop(stop) {
 	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude);
-	console.log(stop);
 	var marker = new google.maps.Marker({
 	  position: latLng,
 	  map: map,
 	  icon: {
-	  	path: google.maps.SymbolPath.CIRCLE,
-	  	scale: 3,
+		path: google.maps.SymbolPath.CIRCLE,
+		scale: 3,
 		strokeColor: 'black',
 	  },
 	});
-	var content = stop.stop_name;
 	var infoWindow = new google.maps.InfoWindow({
-	    content: content
+		content: $('<button/>', {
+			text: stop.stop_name,
+			id: stop.stop_id,
+			click: getPredictions(stop.stop_id),
+		})[0]
 	  });
 	google.maps.event.addListener(marker, 'click', function() {
-	      infoWindow.open(map, this);
-	    });
+		infoWindow.open(map, this);
+	});
+	google.maps.event.addListener(map, 'click', function() {
+		for(var i=0; i<stopInfos.length; i++) {
+			stopInfos[i].close();
+		}
+	});
 	markers.push(marker);
 	stopInfos.push(infoWindow);
 }
 
 function addStops(routeStops) {
-	var stop;
 	var i;
 	for (var i=0; i<routeStops.length; i++) {
 		addStop(routeStops[i]);

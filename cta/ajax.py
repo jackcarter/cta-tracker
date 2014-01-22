@@ -23,3 +23,11 @@ def get_patterns(request, route):
 @dajaxice_register
 def get_routes(request):
     return simplejson.dumps(get_routes_from_cache())
+
+@dajaxice_register
+def get_predictions(request, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
+    try:
+		a=simplejson.dumps(a.get_predictions(stop_ids, route_ids, vehicle_ids, top))
+	except TypeError:
+		return simplejson.dumps(stop_ids)
+
