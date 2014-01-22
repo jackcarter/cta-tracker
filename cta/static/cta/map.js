@@ -1,6 +1,7 @@
 "use strict";
 var map;
-var markers;
+var markers = [];
+var stopInfos = [];
 
 function addRoutes(routes) {
 	var route;
@@ -78,6 +79,15 @@ function addStop(stop) {
 		strokeColor: 'black',
 	  },
 	});
+	var content = stop.stop_name;
+	var infoWindow = new google.maps.InfoWindow({
+	    content: content
+	  });
+	google.maps.event.addListener(marker, 'click', function() {
+	      infoWindow.open(map, this);
+	    });
+	markers.push(marker);
+	stopInfos.push(infoWindow);
 }
 
 function addStops(routeStops) {
