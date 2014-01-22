@@ -149,7 +149,7 @@ class BusTracker(object):
 			'key'	:	keys.cta,
 			'vid'	:	','.join(vehicle_ids) if vehicle_ids else None,
 			'rt'	:	','.join(route_ids) if route_ids else None,
-			'stpid'	:	','.join(stop_ids) if stop_ids else None,
+			'stpid'	:	','.join([str(id) for id in stop_ids]) if stop_ids else None,
 			'top'	:	top
 		}
 		request_string = 'getpredictions'

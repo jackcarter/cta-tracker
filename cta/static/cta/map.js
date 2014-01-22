@@ -75,7 +75,7 @@ function addPredictions(predictions) {
 }
 
 function getPredictions(stop_id) {
-	Dajaxice.cta.get_predictions(addPredictions, {'stop_ids':[].push(stop_id)});
+	Dajaxice.cta.get_predictions(addPredictions, {'stop_ids':[stop_id]});
 }
 
 function addStop(stop) {
