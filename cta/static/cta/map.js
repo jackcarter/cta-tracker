@@ -69,8 +69,9 @@ function getPatterns() {
 
 function addPredictions(predictions) {
 	var prediction;
+	console.log(predictions);
 	for (prediction in predictions) {
-		console.log(prediction);
+		//console.log(prediction);
 	}
 }
 
@@ -93,7 +94,7 @@ function addStop(stop) {
 		content: $('<button/>', {
 			text: stop.stop_name,
 			id: stop.stop_id,
-			click: getPredictions(stop.stop_id),
+			click: function(){getPredictions(stop.stop_id)},
 		})[0]
 	  });
 	google.maps.event.addListener(marker, 'click', function() {
