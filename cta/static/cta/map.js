@@ -2,6 +2,7 @@
 var map;
 var markers = [];
 var stopInfos = [];
+var listenerHandles = [];
 
 function addRoutes(routes) {
 	var route;
@@ -70,8 +71,34 @@ function getPatterns() {
 function addPredictions(predictions) {
 	var prediction;
 	console.log(predictions);
-	for (prediction in predictions) {
-		//console.log(prediction);
+	for (var i=0; i<predictions.length; i++) {
+		var marker=markers[predictions[i].stop_id];
+		var divId = 'wrapper-' + predictions[i].stop_id.stop_id;
+		var buttonId = 'button-' + predictions[i].stop_id.stop_id;
+		var content = $('<div/>', {
+			id: divId,
+		});
+		content.append($('<button/>', {
+			text: predictions[i].stop_name,
+			id: buttonId,
+			click: function(){getPredictions(predictions[i].stop_id.stop_id)},
+		}));
+		content.append($('<div/>', {
+			text: predictions[i].route_direction + ': ' + predictions[i].predicted_time,
+		}))
+		var newStopInfo = new google.maps.InfoWindow({
+			content: content[0], 
+		  });
+		google.maps.event.removeListener(listenerHandles[predictions[i].stop_id]);
+		google.maps.event.addListener(marker, 'click', function() {
+			newStopInfo.open(map, this);
+		});
+		console.log(stopInfos[predictions[i].stop_id]);
+		stopInfos[predictions[i].stop_id].close();
+		stopInfos[predictions[i].stop_id] = newStopInfo;
+		console.log(stopInfos[predictions[i].stop_id]);
+		stopInfos[predictions[i].stop_id].open();
+		
 	}
 }
 
@@ -90,23 +117,24 @@ function addStop(stop) {
 		strokeColor: 'black',
 	  },
 	});
+	var divId = 'wrapper-' + stop.stop_id;
+	var buttonId = 'button-' + stop.stop_id;
+	var content = $('<div/>', {
+		id: divId,
+	});
+	content.append($('<button/>', {
+		text: stop.stop_name,
+		id: buttonId,
+		click: function(){getPredictions(stop.stop_id)},
+	}));
 	var infoWindow = new google.maps.InfoWindow({
-		content: $('<button/>', {
-			text: stop.stop_name,
-			id: stop.stop_id,
-			click: function(){getPredictions(stop.stop_id)},
-		})[0]
+		content: content[0], 
 	  });
-	google.maps.event.addListener(marker, 'click', function() {
+	listenerHandles[stop.stop_id] = google.maps.event.addListener(marker, 'click', function() {
 		infoWindow.open(map, this);
 	});
-	google.maps.event.addListener(map, 'click', function() {
-		for(var i=0; i<stopInfos.length; i++) {
-			stopInfos[i].close();
-		}
-	});
-	markers.push(marker);
-	stopInfos.push(infoWindow);
+	markers[stop.stop_id]=marker;
+	stopInfos[stop.stop_id]=infoWindow;
 }
 
 function addStops(routeStops) {
