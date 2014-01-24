@@ -93,11 +93,9 @@ function addPredictions(predictions) {
 		google.maps.event.addListener(marker, 'click', function() {
 			newStopInfo.open(map, this);
 		});
-		console.log(stopInfos[predictions[i].stop_id]);
 		stopInfos[predictions[i].stop_id].close();
 		stopInfos[predictions[i].stop_id] = newStopInfo;
-		console.log(stopInfos[predictions[i].stop_id]);
-		stopInfos[predictions[i].stop_id].open();
+		stopInfos[predictions[i].stop_id].open(map, marker);
 		
 	}
 }
