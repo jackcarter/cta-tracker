@@ -1,5 +1,5 @@
+import os
 import requests
-import keys
 from datetime import datetime
 import xml.etree.ElementTree as ET
 
