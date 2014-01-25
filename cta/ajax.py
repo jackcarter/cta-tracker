@@ -14,15 +14,18 @@ def get_stops_from_cache(route, direction):
 
 @dajaxice_register
 def get_stops(request, route, direction):
-    return simplejson.dumps(get_stops_from_cache(route, direction))
+	return simplejson.dumps(a.get_stops(route, direction))
+#    return simplejson.dumps(get_stops_from_cache(route, direction))
 
 @dajaxice_register
 def get_patterns(request, route):
-    return simplejson.dumps(a.get_patterns(route))
+	return simplejson.dumps(a.get_patterns(route))
+#    return simplejson.dumps(a.get_patterns(route))
 
 @dajaxice_register
 def get_routes(request):
-    return simplejson.dumps(get_routes_from_cache())
+	return simplejson.dumps(a.get_routes())
+#    return simplejson.dumps(get_routes_from_cache())
 
 @dajaxice_register
 def get_predictions(request, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
