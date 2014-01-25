@@ -26,7 +26,7 @@ class BusTracker(object):
 	
 	def get_time(self):
 			params = {
-				'key':cta_api_key,
+				'key':self.cta_api_key,
 			}
 			request_string = 'gettime'
 			root = self.run_query(request_string, params)
@@ -35,7 +35,7 @@ class BusTracker(object):
 
 	def get_vehicles(self, vehicle_ids=None, route_ids=None):
 		params = {
-			'key':cta_api_key,
+			'key':self.cta_api_key,
 			'vid':','.join(vehicle_ids) if vehicle_ids else None,
 			'rt':','.join(route_ids) if route_ids else None,
 		}
@@ -61,7 +61,7 @@ class BusTracker(object):
 
 	def get_directions(self, route_id):
 		params = {
-			'key':cta_api_key,
+			'key':self.cta_api_key,
 			'rt':route_id,
 		}
 		request_string = 'getdirections'
@@ -73,7 +73,7 @@ class BusTracker(object):
 			
 	def get_routes(self):
 		params = {
-			'key':cta_api_key,
+			'key':self.cta_api_key,
 		}
 		request_string = 'getroutes'
 		root = self.run_query(request_string, params)
@@ -89,7 +89,7 @@ class BusTracker(object):
 	
 	def get_stops(self, route, direction):
 		params = {
-			'key'	:	cta_api_key,
+			'key'	:	self.cta_api_key,
 			'rt'	:	route,
 			'dir'	:	direction,
 		}
@@ -109,7 +109,7 @@ class BusTracker(object):
 
 	def get_patterns(self, route_id=None, pattern_ids=None):
 		params = {
-			'key'	:	cta_api_key,
+			'key'	:	self.cta_api_key,
 			'pid'	:	','.join(pattern_ids) if pattern_ids else None,
 			'rt'	:	route_id if route_id else None,
 		}
@@ -147,7 +147,7 @@ class BusTracker(object):
 
 	def get_predictions(self, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
 		params = {
-			'key'	:	cta_api_key,
+			'key'	:	self.cta_api_key,
 			'vid'	:	','.join(vehicle_ids) if vehicle_ids else None,
 			'rt'	:	','.join(route_ids) if route_ids else None,
 			'stpid'	:	','.join([str(id) for id in stop_ids]) if stop_ids else None,
