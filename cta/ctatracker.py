@@ -50,7 +50,7 @@ class BusTracker(object):
 				'longitude'			:	self.parse_double(v.find('lon').text),
 				'heading'			:	self.parse_int(v.find('hdg').text),
 				'pattern_id'		:	v.find('pid').text,
-				'route'				:	v.find('rt').text,
+				'route_id'				:	v.find('rt').text,
 				'destination'		:	v.find('des').text,
 				'pattern_distance'	:	self.parse_int(v.find('pdist').text),
 				'delayed'			:	True if v.find('dly') is not None else False,
@@ -80,7 +80,7 @@ class BusTracker(object):
 		routes = []
 		def parse_route(r):
 			return {
-				'route'		:	r.find('rt').text,
+				'route_id'		:	r.find('rt').text,
 				'route_name':	r.find('rtnm').text,
 			}
 		for r in root.findall('route'):
@@ -164,7 +164,7 @@ class BusTracker(object):
 				'stop_name'			:	p.find('stpnm').text,
 				'vehicle_id'		:	p.find('vid').text,
 				'distance_to_stop'	:	self.parse_int(p.find('dstp').text),
-				'route'				:	p.find('rt').text,
+				'route_id'			:	p.find('rt').text,
 				'route_direction'	:	p.find('rtdir').text,
 				'destination'		:	p.find('des').text,
 				'predicted_time'	:	p.find('prdtm').text,

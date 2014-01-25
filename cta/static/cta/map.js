@@ -6,12 +6,14 @@ var listenerHandles = [];
 
 function addRoutes(routes) {
 	var route;
+	console.log(routes);
 	for (route in routes) {
 		addRoute(routes[route].route_id, routes[route].route_name);
 	  }
 }
 
 function addRoute(routeId, routeName) {
+	console.log()
 	$('#route-selector').append($("<option/>", {
 			value: routeId,
 			text: routeId + ' - ' + routeName
