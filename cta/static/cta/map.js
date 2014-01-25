@@ -68,36 +68,44 @@ function getPatterns() {
 	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
 }
 
+function getStopInfoContent(stop_id, stop_name) {
+	var stop_id = stop_id;
+	var stop_name = stop_name;
+	var divId = 'wrapper-' + stop_id;
+	var buttonId = 'button-' + stop_id;
+	var content = $('<div/>', {
+		id: divId,
+	});
+	content.append(stop_name + '<br/>');
+	content.append($('<button/>', {
+		text: 'Update predictions',
+		id: buttonId,
+		click: function(){getPredictions(stop_id)},
+	}));
+	return content;
+}
+
 function addPredictions(predictions) {
 	var prediction;
-	console.log(predictions);
+	var stop_id = predictions[0].stop_id;
+	var stop_name = predictions[0].stop_name;
+	var marker=markers[stop_id];
+	var content = getStopInfoContent(stop_id, stop_name);
 	for (var i=0; i<predictions.length; i++) {
-		var marker=markers[predictions[i].stop_id];
-		var divId = 'wrapper-' + predictions[i].stop_id.stop_id;
-		var buttonId = 'button-' + predictions[i].stop_id.stop_id;
-		var content = $('<div/>', {
-			id: divId,
-		});
-		content.append($('<button/>', {
-			text: predictions[i].stop_name,
-			id: buttonId,
-			click: function(){getPredictions(predictions[i].stop_id.stop_id)},
-		}));
 		content.append($('<div/>', {
 			text: predictions[i].route_direction + ': ' + predictions[i].predicted_time,
 		}))
 		var newStopInfo = new google.maps.InfoWindow({
 			content: content[0], 
-		  });
-		google.maps.event.removeListener(listenerHandles[predictions[i].stop_id]);
-		google.maps.event.addListener(marker, 'click', function() {
-			newStopInfo.open(map, this);
-		});
-		stopInfos[predictions[i].stop_id].close();
-		stopInfos[predictions[i].stop_id] = newStopInfo;
-		stopInfos[predictions[i].stop_id].open(map, marker);
-		
+		  });		
 	}
+	google.maps.event.removeListener(listenerHandles[stop_id]);
+	google.maps.event.addListener(marker, 'click', function() {
+		newStopInfo.open(map, this);
+	});
+	stopInfos[stop_id].close();
+	stopInfos[stop_id] = newStopInfo;
+	stopInfos[stop_id].open(map, marker);
 }
 
 function getPredictions(stop_id) {
@@ -115,16 +123,7 @@ function addStop(stop) {
 		strokeColor: 'black',
 	  },
 	});
-	var divId = 'wrapper-' + stop.stop_id;
-	var buttonId = 'button-' + stop.stop_id;
-	var content = $('<div/>', {
-		id: divId,
-	});
-	content.append($('<button/>', {
-		text: stop.stop_name,
-		id: buttonId,
-		click: function(){getPredictions(stop.stop_id)},
-	}));
+	var content = getStopInfoContent(stop.stop_id, stop.stop_name);
 	var infoWindow = new google.maps.InfoWindow({
 		content: content[0], 
 	  });
