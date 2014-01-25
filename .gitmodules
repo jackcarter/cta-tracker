@@ -1,0 +1,3 @@
+[submodule "django-dajaxice"]
+	path = django-dajaxice
+	url = ../django-dajaxice/
