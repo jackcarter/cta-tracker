@@ -65,7 +65,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
         'django.contrib.staticfiles',
         'cta',
-        'dajax',
         'dajaxice',
     'south',
 )
