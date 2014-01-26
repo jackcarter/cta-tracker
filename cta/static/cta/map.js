@@ -1,9 +1,9 @@
 "use strict";
 var map;
 var markers = [];
-var stopInfos = [];
 var listenerHandles = [];
-var stopTypeIndicator = 'S'
+var stopTypeIndicator = 'S';
+var stopInfo = new google.maps.InfoWindow();
 
 function addRoutes(routes) {
 	var route;
@@ -79,7 +79,7 @@ function getStopInfoContent(stop_id, stop_name) {
 	return content;
 }
 
-function addPredictions(predictions) {
+function openStopInfo(predictions) {
 	var prediction;
 	var stop_id = predictions[0].stop_id;
 	var stop_name = predictions[0].stop_name;
@@ -90,14 +90,15 @@ function addPredictions(predictions) {
 			text: predictions[i].route_direction + ': ' + predictions[i].predicted_time,
 		}))	
 	}
-	var newStopInfo = new google.maps.InfoWindow({
+	stopInfo.close();
+	stopInfo = new google.maps.InfoWindow({
 		content: content[0], 
 	  });
-	newStopInfo.open(map, marker);
+	stopInfo.open(map, marker);
 }
 
 function getPredictions(stop_id) {
-	Dajaxice.cta.get_predictions(addPredictions, {'stop_ids':[stop_id]});
+	Dajaxice.cta.get_predictions(openStopInfo, {'stop_ids':[stop_id]});
 }
 
 function addStop(route_id, direction, stop) {
