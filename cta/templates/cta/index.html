@@ -1,10 +1,13 @@
 {% load staticfiles %}
 {% load dajaxice_templatetags %}
+	<head>
+		<title>Chicago Bus Tracker</title>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
 	<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
 	{% dajaxice_js_import %}
 	<script type="text/javascript" src="{% static 'cta/map.js' %}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static 'cta/style.css' %}" />
+	</head>
   <body onload="initialize()" onunload="GUnload()">
 	<div id='inputs'>
 		<select id="route-selector"></select>

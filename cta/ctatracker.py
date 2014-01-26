@@ -87,10 +87,10 @@ class BusTracker(object):
 			routes.append(parse_route(r))
 		return routes
 	
-	def get_stops(self, route, direction):
+	def get_stops(self, route_id, direction):
 		params = {
 			'key'	:	self.cta_api_key,
-			'rt'	:	route,
+			'rt'	:	route_id,
 			'dir'	:	direction,
 		}
 		request_string = 'getstops'
@@ -105,7 +105,11 @@ class BusTracker(object):
 			}
 		for s in root.findall('stop'):
 			stops.append(parse_stop(s))
-		return stops
+		return {
+			'route_id':route_id,
+			'direction':direction,
+			'stops':stops,
+		}
 
 	def get_patterns(self, route_id=None, pattern_ids=None):
 		params = {
@@ -136,9 +140,10 @@ class BusTracker(object):
 				}
 		def parse_pattern(pattern):
 			return {
+				'route_id'			:	route_id,
 				'pattern_id'		:	self.parse_int(pattern.find('pid').text),
 				'length'			:	self.parse_int(pattern.find('ln').text),
-				'route_direction'	:	pattern.find('rtdir').text,
+				'direction'			:	pattern.find('rtdir').text,
 				'point'				:	[parse_point(point) for point in pattern.findall('pt')],
 			}
 		for pattern in root.findall('ptr'):

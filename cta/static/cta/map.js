@@ -3,17 +3,16 @@ var map;
 var markers = [];
 var stopInfos = [];
 var listenerHandles = [];
+var stopTypeIndicator = 'S'
 
 function addRoutes(routes) {
 	var route;
-	console.log(routes);
 	for (route in routes) {
 		addRoute(routes[route].route_id, routes[route].route_name);
 	  }
 }
 
 function addRoute(routeId, routeName) {
-	console.log()
 	$('#route-selector').append($("<option/>", {
 			value: routeId,
 			text: routeId + ' - ' + routeName
@@ -41,9 +40,8 @@ function addPattern(data) {
 	var i;
 
 	for (var i=0; i<points.length; i++) {
-		console.log(points[i]);
-		if (points[i].type === 'S') {
-			addStop(points[i])
+		if (points[i].type === stopTypeIndicator) {
+			addStop(data.route_id, data.direction, points[i])
 		}
 		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
 		path.push(latLng);
@@ -114,7 +112,7 @@ function getPredictions(stop_id) {
 	Dajaxice.cta.get_predictions(addPredictions, {'stop_ids':[stop_id]});
 }
 
-function addStop(stop) {
+function addStop(route_id, direction, stop) {
 	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude);
 	var marker = new google.maps.Marker({
 	  position: latLng,
@@ -137,17 +135,21 @@ function addStop(stop) {
 }
 
 function addStops(routeStops) {
-	var i;
-	for (var i=0; i<routeStops.length; i++) {
-		addStop(routeStops[i]);
+	for (var i=0; i<routeStops.stops.length; i++) {
+		addStop(routeStops.route_id, routeStops.direction, routeStops.stops[i]);
 	}
 }
 
 function getStops(){
-	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':'Eastbound'});
-	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':'Westbound'});
-	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':'Northbound'});
-	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':'Southbound'});
+	var directions = [
+		'Eastbound',
+		'Westbound',
+		'Northbound',
+		'Southbound',
+	]
+	for (var i=0; i<directions.length;i++) {
+		Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':directions[i]});
+	}
 }
 
 function initialize() {
