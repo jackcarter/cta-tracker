@@ -72,10 +72,17 @@ function getStopInfoContent(stop_id, stop_name) {
 	var stop_id = stop_id;
 	var stop_name = stop_name;
 	var divId = 'wrapper-' + stop_id;
+	var buttonId = 'button-' + stop_id;
 	var content = $('<div/>', {
 		id: divId,
 	});
 	content.append(stop_name + '<br/>');
+	content.append($('<button/>', {
+		text: 'Update predictions',
+		id: buttonId,
+		click: function(){getPredictions(stop_id)},
+	}));
+	content.addClass('infoWindow');
 	return content;
 }
 
@@ -89,14 +96,10 @@ function openStopInfo(predictions) {
 	var timestamp;
 	var time_until;
 	var route_id;
-	console.log(predictions);
 	for (var i=0; i<predictions.length; i++) {
 		predicted_time = new Date(predictions[i].predicted_time);
 		timestamp = new Date(predictions[i].timestamp);
 		time_until = (predicted_time - timestamp)/(1000*60);
-		console.log('pre' + predicted_time);
-		console.log('ts' + timestamp);
-		console.log('tu' + time_until);
 		route_id = predictions[i].route_id;
 		content.append($('<div/>', {
 			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm',
