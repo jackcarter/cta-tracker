@@ -11,6 +11,8 @@ class BusTracker(object):
 
 	def parse_time(self, xml_timestamp):
 		return datetime.strptime(xml_timestamp, '%Y%m%d %H:%M')
+	def parse_time_RfC_3339(self, xml_timestamp):
+		return self.parse_time(xml_timestamp).strftime('%Y-%m-%dT%H:%M:%S')
 	def parse_time_seconds(self, xml_timestamp):
 		return datetime.strptime(xml_timestamp, '%Y%m%d %H:%M:%S')
 	def parse_double(self, xml_double):
@@ -163,7 +165,7 @@ class BusTracker(object):
 		predictions = []
 		def parse_prediction(p):
 			return {
-				'timestamp'			:	p.find('tmstmp').text,
+				'timestamp'			:	self.parse_time_RfC_3339(p.find('tmstmp').text),
 				'type'				:	p.find('typ').text,
 				'stop_id'			:	self.parse_int(p.find('stpid').text),
 				'stop_name'			:	p.find('stpnm').text,
@@ -172,7 +174,7 @@ class BusTracker(object):
 				'route_id'			:	p.find('rt').text,
 				'route_direction'	:	p.find('rtdir').text,
 				'destination'		:	p.find('des').text,
-				'predicted_time'	:	p.find('prdtm').text,
+				'predicted_time'	:	self.parse_time_RfC_3339(p.find('prdtm').text),
 				'delayed'			:	True if p.find('dly') is not None else False,
 			}
 		for p in root.findall('prd'):

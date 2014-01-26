@@ -85,9 +85,21 @@ function openStopInfo(predictions) {
 	var stop_name = predictions[0].stop_name;
 	var marker=markers[stop_id];
 	var content = getStopInfoContent(stop_id, stop_name);
+	var predicted_time;
+	var timestamp;
+	var time_until;
+	var route_id;
+	console.log(predictions);
 	for (var i=0; i<predictions.length; i++) {
+		predicted_time = new Date(predictions[i].predicted_time);
+		timestamp = new Date(predictions[i].timestamp);
+		time_until = (predicted_time - timestamp)/(1000*60);
+		console.log('pre' + predicted_time);
+		console.log('ts' + timestamp);
+		console.log('tu' + time_until);
+		route_id = predictions[i].route_id;
 		content.append($('<div/>', {
-			text: predictions[i].route_direction + ': ' + predictions[i].predicted_time,
+			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm',
 		}))	
 	}
 	stopInfo.close();
