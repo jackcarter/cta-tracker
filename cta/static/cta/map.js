@@ -5,6 +5,26 @@ var listenerHandles = [];
 var stopTypeIndicator = 'S';
 var stopInfo = new google.maps.InfoWindow();
 
+function refreshStopInfo(stop_id) {
+	stopInfo.close();
+	stopInfo.open(map, markers[stop_id]);
+}
+
+function getDivId(stop_id) {
+	return 'wrapper-' + stop_id;
+}
+
+function addUpdateButton(stop_id) {
+	var div_id = getDivId(stop_id);
+	var buttonId = 'button-' + stop_id;
+	$('#'+div_id).append($('<button/>', {
+		text: 'Update predictions',
+		id: buttonId,
+		click: function(){getPredictions(stop_id)},
+	}));
+	refreshStopInfo(stop_id);
+}
+
 function addRoutes(routes) {
 	var route;
 	for (route in routes) {
@@ -71,17 +91,11 @@ function getPatterns() {
 function getStopInfoContent(stop_id, stop_name) {
 	var stop_id = stop_id;
 	var stop_name = stop_name;
-	var divId = 'wrapper-' + stop_id;
-	var buttonId = 'button-' + stop_id;
+	var div_id = getDivId(stop_id);
 	var content = $('<div/>', {
-		id: divId,
+		id: div_id,
 	});
 	content.append(stop_name + '<br/>');
-	content.append($('<button/>', {
-		text: 'Update predictions',
-		id: buttonId,
-		click: function(){getPredictions(stop_id)},
-	}));
 	content.addClass('infoWindow');
 	return content;
 }
@@ -106,10 +120,9 @@ function openStopInfo(predictions) {
 		}))	
 	}
 	stopInfo.close();
-	stopInfo = new google.maps.InfoWindow({
-		content: content[0], 
-	  });
+	stopInfo.setContent(content[0]);
 	stopInfo.open(map, marker);
+	window.setTimeout(function(){addUpdateButton(stop_id)}, 1000*60);
 }
 
 function getPredictions(stop_id) {
