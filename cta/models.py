@@ -1,55 +1,23 @@
 from django.db import models
 from django.utils import timezone
+from mongoengine import *
 
 
-class Direction(models.Model):
-	def as_dict(self):
-		return {
-			'direction'	:	self.direction,
-		}
-	direction = models.CharField(max_length = 40, null=True)
-
-	def __unicode__(self):
-		return self.direction
-
-class Stop(models.Model):
-	def as_dict(self):
-		return {
-			'stop_id'	:	self.stop_id,
-			'stop_name'	:	self.stop_name,
-			'latitude'	:	self.latitude,
-			'longitude'	:	self.longitude,
-		}
-	stop_id = models.IntegerField(primary_key=True)
-	stop_name = models.CharField(max_length = 100)
-	latitude = models.FloatField()
-	longitude = models.FloatField()
+class Stop(EmbeddedDocument):
+	stop_id = IntegerField(required = True)
+	stop_name = CharField(max_length = 100)
+	latitude = FloatField()
+	longitude = FloatField()
 
 	def __unicode__(self):
 		return self.stop_name
 
 
-class Route(models.Model):
-	def as_dict_no_stops(self):
-		return {
-			'route_id'		:	self.route_id,
-			'route_name'	:	self.route_name,
-			'directions'	:	[d.direction for d in self.directions.all()],
-		}
-	route_id = models.CharField(max_length = 8, primary_key=True)
-	route_name = models.CharField(max_length = 100)
-	directions = models.ManyToManyField(Direction, blank=True, null=True)
-	stops = models.ManyToManyField(Stop, blank=True, null=True, through='StopToRoute')
-
+class Route(Document):
+	route_id = CharField(max_length = 8, required=True)
+	route_name = CharField(max_length = 100)
+	directions = ListField()
+	stops = ListField(EmbeddedDocumentField(Stop))
+	
 	def __unicode__(self):
 		return self.route_name
-
-
-class Vehicle(models.Model):
-	pass
-	
-	
-class StopToRoute(models.Model):
-	route = models.ForeignKey(Route)
-	stop = models.ForeignKey(Stop)
-	direction = models.ForeignKey(Direction)

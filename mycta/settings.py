@@ -63,7 +63,6 @@ INSTALLED_APPS = (
         'django.contrib.staticfiles',
         'cta',
         'dajaxice',
-    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -94,12 +93,15 @@ USE_TZ = True
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
+import mongoengine
 
-DATABASES = {}
+DATABASES = {
+    'default': {
+        'ENGINE': '',
+    },
+}
 
-# Parse database configuration from $DATABASE_URL
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
+SESSION_ENGINE = 'mongoengine.django.sessions' # optional
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -114,3 +116,16 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+#Mongo stuff:
+'''
+_MONGODB_USER = 'mongouser'
+_MONGODB_PASSWD = 'password'
+_MONGODB_HOST = 'thehost'
+_MONGODB_NAME = 'thedb'
+_MONGODB_DATABASE_HOST = \
+    'mongodb://%s:%s@%s/%s' \
+    % (_MONGODB_USER, _MONGODB_PASSWD, _MONGODB_HOST, _MONGODB_NAME)
+
+mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
+'''
