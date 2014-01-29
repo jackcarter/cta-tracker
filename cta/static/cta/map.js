@@ -100,7 +100,14 @@ function getStopInfoContent(stop_id, stop_name) {
 	return content;
 }
 
+function sortByRouteId(objects) {
+	return objects.sort(function(a, b) {
+		return a.route_id - b.route_id
+	})
+}
+
 function openStopInfo(predictions) {
+	predictions = sortByRouteId(predictions);
 	var prediction;
 	var stop_id = predictions[0].stop_id;
 	var stop_name = predictions[0].stop_name;
