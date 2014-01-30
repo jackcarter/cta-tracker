@@ -56,9 +56,9 @@ STATICFILES_FINDERS = (
 
 INSTALLED_APPS = (
     'django.contrib.admin',
-    'django.contrib.auth',
+#    'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+#    'django.contrib.sessions',
     'django.contrib.messages',
         'django.contrib.staticfiles',
         'cta',
@@ -66,10 +66,10 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
+#    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+#    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -93,15 +93,6 @@ USE_TZ = True
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-import mongoengine
-
-DATABASES = {
-    'default': {
-        'ENGINE': '',
-    },
-}
-
-SESSION_ENGINE = 'mongoengine.django.sessions' # optional
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -118,14 +109,9 @@ STATICFILES_DIRS = (
 )
 
 #Mongo stuff:
-'''
-_MONGODB_USER = 'mongouser'
-_MONGODB_PASSWD = 'password'
-_MONGODB_HOST = 'thehost'
-_MONGODB_NAME = 'thedb'
-_MONGODB_DATABASE_HOST = \
-    'mongodb://%s:%s@%s/%s' \
-    % (_MONGODB_USER, _MONGODB_PASSWD, _MONGODB_HOST, _MONGODB_NAME)
-
-mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
-'''
+DATABASE_ENGINE = ''
+DATABASE_NAME = ''
+DATABASE_USER = ''
+DATABASE_PASSWORD = ''
+DATABASE_HOST = ''
+DATABASE_PORT = ''
