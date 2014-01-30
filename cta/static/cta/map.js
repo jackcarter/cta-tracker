@@ -154,21 +154,15 @@ function addStop(route_id, direction, stop) {
 }
 
 function addStops(routeStops) {
-	for (var i=0; i<routeStops.stops.length; i++) {
-		addStop(routeStops.route_id, routeStops.direction, routeStops.stops[i]);
+	for (var j=0; j<routeStops.length; j++) {
+		for (var i=0; i<routeStops[j].stops.length; i++) {
+			addStop(routeStops[j].route_id, routeStops[j].direction, routeStops[j].stops[i]);
+		}	
 	}
 }
 
 function getStops(){
-	var directions = [
-		'Eastbound',
-		'Westbound',
-		'Northbound',
-		'Southbound',
-	]
-	for (var i=0; i<directions.length;i++) {
-		Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val(), 'direction':directions[i]});
-	}
+	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val()});
 }
 
 function initialize() {

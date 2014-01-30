@@ -1,7 +1,7 @@
 from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
 import ctatracker
-from models import Route, Stop, Direction, Vehicle
+from models import Route, Stop
 
 a = ctatracker.BusTracker()
 
@@ -11,10 +11,17 @@ def get_routes_from_cache():
 def get_stops_from_cache(route, direction):
 	stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
 	return [stop.as_dict() for stop in stops]
+	
+def get_stops_helper(route):
+	return_list = []
+	directions = a.get_directions(route)
+	for direction in directions:
+		return_list.append(a.get_stops(route, direction))
+	return return_list
 
 @dajaxice_register
-def get_stops(request, route, direction):
-	return simplejson.dumps(a.get_stops(route, direction))
+def get_stops(request, route):
+	return simplejson.dumps(get_stops_helper(route))
 #    return simplejson.dumps(get_stops_from_cache(route, direction))
 
 @dajaxice_register
