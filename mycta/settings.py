@@ -56,9 +56,9 @@ STATICFILES_FINDERS = (
 
 INSTALLED_APPS = (
     'django.contrib.admin',
-#    'django.contrib.auth',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
-#    'django.contrib.sessions',
+    'django.contrib.sessions',
     'django.contrib.messages',
         'django.contrib.staticfiles',
         'cta',
@@ -66,10 +66,10 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-#    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-#    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -109,9 +109,31 @@ STATICFILES_DIRS = (
 )
 
 #Mongo stuff:
+import mongoengine
+
+DATABASES = {
+    'default': {
+        'ENGINE': '',
+    },
+}
+
+SESSION_ENGINE = 'mongoengine.django.sessions' # optional
+
 DATABASE_ENGINE = ''
 DATABASE_NAME = ''
 DATABASE_USER = ''
 DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
 DATABASE_PORT = ''
+
+_MONGODB_NAME = 'jackdb'
+_MONGODB_DATABASE_HOST = os.environ.get('MONGOHQ_URL')
+
+mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
+
+AUTHENTICATION_BACKENDS = (
+    'mongoengine.django.auth.MongoEngineBackend',
+)
+
+#Don't run SQL tests:
+TEST_RUNNER = 'yourproject.tests.NoSQLTestRunner'
