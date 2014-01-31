@@ -63,7 +63,6 @@ INSTALLED_APPS = (
         'django.contrib.staticfiles',
         'cta',
         'dajaxice',
-    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -95,12 +94,6 @@ USE_TZ = True
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {}
-
-# Parse database configuration from $DATABASE_URL
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config()
-
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -114,3 +107,33 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+#Mongo stuff:
+import mongoengine
+
+DATABASES = {
+    'default': {
+        'ENGINE': '',
+    },
+}
+
+SESSION_ENGINE = 'mongoengine.django.sessions' # optional
+
+DATABASE_ENGINE = ''
+DATABASE_NAME = ''
+DATABASE_USER = ''
+DATABASE_PASSWORD = ''
+DATABASE_HOST = ''
+DATABASE_PORT = ''
+
+_MONGODB_NAME = 'jackdb'
+_MONGODB_DATABASE_HOST = os.environ.get('MONGOHQ_URL')
+
+mongoengine.connect(_MONGODB_NAME, host=_MONGODB_DATABASE_HOST)
+
+AUTHENTICATION_BACKENDS = (
+    'mongoengine.django.auth.MongoEngineBackend',
+)
+
+#Don't run SQL tests:
+TEST_RUNNER = 'yourproject.tests.NoSQLTestRunner'
