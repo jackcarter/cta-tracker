@@ -5,7 +5,9 @@ dj-static==0.0.5
 -e git+https://github.com/jackcarter/django-dajaxice.git@3461c5ca5e60840c546ea5767349abb06cffc2dc#egg=django_dajaxice-master
 django-toolbelt==0.0.1
 gunicorn==18.0
+mongoengine==0.8.7
 psycopg2==2.5.2
+pymongo==2.6.3
 pystache==0.5.3
 requests==2.2.1
 static==1.0.2
