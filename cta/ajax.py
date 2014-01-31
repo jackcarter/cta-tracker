@@ -1,12 +1,22 @@
 from django.utils import simplejson
 from dajaxice.decorators import dajaxice_register
-import ctatracker
-from models import Route, Stop
+import cta.ctatracker
+from cta.models import Route, Stop
 
-a = ctatracker.BusTracker()
+import pymongo
+import os
+mongo = os.environ.get('MONGOHQ_URL')
+connection = pymongo.Connection(mongo)
+db = connection.jackdb
+route_col = db.routes
+
+a = cta.ctatracker.BusTracker()
 
 def get_routes_from_cache():
-	return [route.as_dict_no_stops() for route in Route.objects.all()]
+	routes = []
+	for route in route_col.find({},{'_id':0}):
+		routes.append(route)
+	return routes
 
 def get_stops_from_cache(route, direction):
 	stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
@@ -31,7 +41,8 @@ def get_patterns(request, route):
 
 @dajaxice_register
 def get_routes(request):
-	return simplejson.dumps(get_routes_from_cache())
+	r = simplejson.dumps(get_routes_from_cache())
+	return r#'{a:"1"}'
 	#return simplejson.dumps(a.get_routes())
 
 @dajaxice_register
