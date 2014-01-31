@@ -16,7 +16,7 @@ class Stop(EmbeddedDocument):
 class Route(Document):
 	route_id = StringField(max_length = 8, required=True)
 	route_name = StringField(max_length = 100)
-	directions = ListField()
+	directions = ListField(StringField())
 	stops = ListField(EmbeddedDocumentField(Stop))
 	
 	def __unicode__(self):

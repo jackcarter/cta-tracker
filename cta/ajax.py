@@ -31,8 +31,8 @@ def get_patterns(request, route):
 
 @dajaxice_register
 def get_routes(request):
-	return simplejson.dumps(a.get_routes())
-#    return simplejson.dumps(get_routes_from_cache())
+	return simplejson.dumps(get_routes_from_cache())
+	#return simplejson.dumps(a.get_routes())
 
 @dajaxice_register
 def get_predictions(request, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
