@@ -35,7 +35,7 @@ class BusTracker(object):
 			d = self.parse_time_seconds(root.find('tm').text)
 			return d
 
-	def get_vehicles(self, vehicle_ids=None, route_ids=None):
+	def get_vehicles(self, route_ids=None, vehicle_ids=None):
 		params = {
 			'key':self.cta_api_key,
 			'vid':','.join(vehicle_ids) if vehicle_ids else None,

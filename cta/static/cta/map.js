@@ -165,6 +165,14 @@ function getStops(){
 	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val()});
 }
 
+function addVehicles(vehicles) {
+	console.log(vehicles);
+}
+
+function getVehicles(){
+	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[$('#route-selector').val()]})
+}
+
 function initialize() {
 	//Init google map:
 	var mapDiv = document.getElementById('map_canvas');
