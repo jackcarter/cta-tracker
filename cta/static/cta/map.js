@@ -4,6 +4,7 @@ var markers = [];
 var listenerHandles = [];
 var stopTypeIndicator = 'S';
 var stopInfo = new google.maps.InfoWindow();
+var vehicles = {};
 
 function refreshStopInfo(stop_id) {
 	stopInfo.close();
@@ -165,12 +166,36 @@ function getStops(){
 	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val()});
 }
 
-function addVehicles(vehicles) {
-	console.log(vehicles);
+function addVehicle(vehicle) {
+	var latLng = new google.maps.LatLng(vehicle.latitude, vehicle.longitude);
+	var marker = new google.maps.Marker({
+	  position: latLng,
+	  map: map,
+	  icon: {
+		path: google.maps.SymbolPath.CIRCLE,
+		scale: 3,
+		strokeColor: 'red',
+	  },
+	});
+	vehicles[vehicle.route_id].push(marker);
+}
+
+function addVehicles(new_vehicles) {
+	console.log(new_vehicles);
+	for (var i=0;i<new_vehicles.length;i++) {
+		addVehicle(new_vehicles[i]);
+	}
 }
 
 function getVehicles(){
-	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[$('#route-selector').val()]})
+	var route_id = $('#route-selector').val();
+	if (typeof vehicles[route_id] !== 'undefined') {
+		for (var i=0;i<vehicles[route_id].length;i++) {
+			vehicles[route_id][i].setMap(null);
+		}
+	}
+	vehicles[route_id] = [];
+	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[route_id]})
 }
 
 function initialize() {

@@ -47,7 +47,7 @@ class BusTracker(object):
 		def parse_vehicle(v):
 			return {
 				'vehicle_id'		:	v.find('vid').text,
-				'timestamp'			:	self.parse_time(v.find('tmstmp').text),
+				'timestamp'			:	self.parse_time_RfC_3339(v.find('tmstmp').text),
 				'latitude'			:	self.parse_double(v.find('lat').text),
 				'longitude'			:	self.parse_double(v.find('lon').text),
 				'heading'			:	self.parse_int(v.find('hdg').text),
