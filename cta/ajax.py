@@ -36,7 +36,7 @@ def get_stops(request, route):
 
 @dajaxice_register
 def get_pattern(request, route):
-	return simplejson.dumps(a.get_patterns(route))
+	return simplejson.dumps(a.get_pattern(route))
 #    return simplejson.dumps(a.get_patterns(route))
 
 @dajaxice_register

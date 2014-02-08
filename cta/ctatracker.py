@@ -113,7 +113,7 @@ class BusTracker(object):
 			'stops':stops,
 		}
 
-	def get_patterns(self, route_id=None, pattern_ids=None):
+	def get_pattern(self, route_id=None, pattern_ids=None):
 		params = {
 			'key'	:	self.cta_api_key,
 			'pid'	:	','.join(pattern_ids) if pattern_ids else None,

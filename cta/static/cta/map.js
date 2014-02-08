@@ -86,7 +86,7 @@ function addPatterns(patterns) {
 }
 
 function getPatterns() {
-	Dajaxice.cta.get_patterns(addPatterns, {'route':$('#route-selector').val()});
+	Dajaxice.cta.get_pattern(addPatterns, {'route':$('#route-selector').val()});
 }
 
 function getStopInfoContent(stop_id, stop_name) {
@@ -172,9 +172,10 @@ function addVehicle(vehicle) {
 	  position: latLng,
 	  map: map,
 	  icon: {
-		path: google.maps.SymbolPath.CIRCLE,
+		path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
 		scale: 3,
 		strokeColor: 'red',
+		rotation: vehicle.heading,
 	  },
 	});
 	vehicles[vehicle.route_id].push(marker);
