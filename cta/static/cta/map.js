@@ -183,12 +183,17 @@ function addVehicle(vehicle) {
 	vehicles[vehicle.route_id].push(vehicle_marker);
 }
 
+/*
 function updateVehicle(oldVehicle, newVehicle) {
-	console.log(oldVehicle, newVehicle);
 	var fromLat = oldVehicle['latitude'];
 	var fromLng = oldVehicle['longitude'];
 	var toLat = newVehicle['latitude'];
 	var toLng = newVehicle['longitude'];
+	
+	//Update object in vehicles array
+	var marker = oldVehicle['marker'];
+	oldVehicle = newVehicle;
+	oldVehicle['marker'] = marker;
 	
 	var intermediateLatLngs = [];
 	var curLat;
@@ -198,33 +203,76 @@ function updateVehicle(oldVehicle, newVehicle) {
 		curLng = fromLng + i*(toLng-fromLng);
 		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
 	}
-	console.log(intermediateLatLngs);
 	function animate(marker, intermediateLatLngs) {
-		marker.setPosition(intermediateLatLngs.shift());
-		if (intermediateLatLngs.length > 0) {
+		marker.setPosition(intermediateLatLngs[0]);
+		marker.position = intermediateLatLngs[0];
+		var newIntermediateLatLngs = intermediateLatLngs.slice(1);
+		if (newIntermediateLatLngs.length > 0) {
 			setTimeout(function() {
-				animate(marker, intermediateLatLngs)
-			}, 50);
-		}	
+				animate(marker, newIntermediateLatLngs)
+			}, 10);
+		} else {
+			console.log('end ' + oldVehicle.vehicle_id);
+			console.log(oldVehicle);
+			console.log(newVehicle);
+			console.log(marker);
+		}
 	}
 	animate(oldVehicle['marker'], intermediateLatLngs);
 }
+*/
+
+function updateVehicle(newVehicle, oldVehicle) {
+	oldVehicle['asdf']='fuck';
+}
+
+function addOrUpdateVehicle(newVehicle) {
+	var route_id = newVehicle['route_id'];
+	var vehicle_id = newVehicle['vehicle_id'];
+	var vehicleFound = false;
+	for (var i=0;i<vehicles[route_id].length && !vehicleFound;i++) {
+		//Update old vehicle if we already have this vehicle_id on this route
+		if (vehicles[route_id][i]['vehicle_id'] == newVehicle['vehicle_id']) {
+			console.log(vehicles[route_id][i]);
+			console.log('about to update');
+			updateVehicle(newVehicle, vehicles[route_id][i]);
+			console.log(vehicles[route_id][i]);
+			vehicleFound = true;
+		}
+	}
+	//If this vehicle ID wasn't on the route last time we updated, we won't have found it
+	//So, let's add it as a new one
+	if (!vehicleFound) {
+		addVehicle(newVehicle);
+	}
+}
+
+function updateVehicles(newVehicles) {
+	for (var i=0;i<newVehicles.length;i++) {
+		addOrUpdateVehicle(newVehicles[i]);
+	}
+}
+
+//TODO: Finish this
+function removeMissingVehicles(newVehicles, routeId) {
+	var oldIds = [];
+	var newIds = []; 
+	for (var i=0;i<vehicles[routeId].length;i++) {
+		oldIds.push(vehicles[routeId][i]['vehicle_id']);
+	}
+	for (var i=0;i<newVehicles.length;i++) {
+		oldIds.push(newVehicles[i]['vehicle_id']);
+	}
+	console.log('add the set subtraction code here');
+}
 
 function addVehicles(new_vehicles) {
-	console.log(new_vehicles);
 	var route_id = new_vehicles['route_ids'][0]; //TODO: generalize to multiple route_ids
-	if (typeof vehicles[route_id] !== 'undefined') {
-		for (var i=0;i<vehicles[route_id].length;i++) {
-			updateVehicle(vehicles[route_id][i], new_vehicles['response'][i])
-			//vehicles[route_id][i]['marker'].setMap(null);
-		}
-	}
-	else {
+	if (typeof vehicles[route_id] === 'undefined') {
+		//this will break if I try to call getVehicles for 2 routes; one loaded and one not
 		vehicles[route_id] = [];
-		for (var i=0;i<new_vehicles['response'].length;i++) {
-			addVehicle(new_vehicles['response'][i]);
-		}
 	}
+	updateVehicles(new_vehicles['response'], route_id);
 }
 
 function getVehicles(){
