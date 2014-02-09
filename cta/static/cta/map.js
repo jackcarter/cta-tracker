@@ -199,6 +199,15 @@ function updateVehicle(oldVehicle, newVehicle) {
 		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
 	}
 	console.log(intermediateLatLngs);
+	function animate(marker, intermediateLatLngs) {
+		marker.setPosition(intermediateLatLngs.shift());
+		if (intermediateLatLngs.length > 0) {
+			setTimeout(function() {
+				animate(marker, intermediateLatLngs)
+			}, 50);
+		}	
+	}
+	animate(oldVehicle['marker'], intermediateLatLngs);
 }
 
 function addVehicles(new_vehicles) {
@@ -211,7 +220,6 @@ function addVehicles(new_vehicles) {
 		}
 	}
 	else {
-		console.log('else');
 		vehicles[route_id] = [];
 		for (var i=0;i<new_vehicles['response'].length;i++) {
 			addVehicle(new_vehicles['response'][i]);
