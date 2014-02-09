@@ -18,13 +18,16 @@ def get_routes_from_cache():
 		routes.append(route)
 	return routes
 
+def get_directions_from_cache(route):
+	route = route_col.find({'route_id':route},{'_id':0})
+
 def get_stops_from_cache(route, direction):
 	stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
 	return [stop.as_dict() for stop in stops]
 	
 def get_stops_helper(route):
 	return_list = []
-	directions = a.get_directions(route)
+	directions = get_directions_from_cache(route)
 	for direction in directions:
 		return_list.append(a.get_stops(route, direction))
 	return return_list
@@ -42,7 +45,7 @@ def get_pattern(request, route):
 @dajaxice_register
 def get_routes(request):
 	r = simplejson.dumps(get_routes_from_cache())
-	return r#'{a:"1"}'
+	return r
 	#return simplejson.dumps(a.get_routes())
 
 @dajaxice_register
