@@ -18,35 +18,28 @@ def get_routes_from_cache():
 		routes.append(route)
 	return routes
 
-def get_directions_from_cache(route):
-	route = route_col.find({'route_id':route},{'_id':0})
-
-def get_stops_from_cache(route, direction):
-	stops = Stop.objects.filter(stoptoroute__route_id=route, stoptoroute__direction__direction=direction)
-	return [stop.as_dict() for stop in stops]
+def get_directions_from_cache(route_id):
+	route = route_col.find({'route_id':route_id},{'_id':0})
 	
-def get_stops_helper(route):
+def get_stops_helper(route_id):
 	return_list = []
-	directions = get_directions_from_cache(route)
+	directions = get_directions_from_cache(route_id)
 	for direction in directions:
-		return_list.append(a.get_stops(route, direction))
+		return_list.append(a.get_stops(route_id, direction))
 	return return_list
 
 @dajaxice_register
-def get_stops(request, route):
-	return simplejson.dumps(get_stops_helper(route))
+def get_stops(request, route_id):
+	return simplejson.dumps(get_stops_helper(route_id))
 #    return simplejson.dumps(get_stops_from_cache(route, direction))
 
 @dajaxice_register
-def get_pattern(request, route):
-	return simplejson.dumps(a.get_pattern(route))
-#    return simplejson.dumps(a.get_patterns(route))
+def get_pattern(request, route_id):
+	return simplejson.dumps(a.get_pattern(route_id))
 
 @dajaxice_register
 def get_routes(request):
-	r = simplejson.dumps(get_routes_from_cache())
-	return r
-	#return simplejson.dumps(a.get_routes())
+	return simplejson.dumps(get_routes_from_cache())
 
 @dajaxice_register
 def get_predictions(request, stop_ids=None, route_ids=None, vehicle_ids=None, top=None):
