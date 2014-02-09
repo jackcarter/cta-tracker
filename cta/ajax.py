@@ -47,5 +47,5 @@ def get_predictions(request, stop_ids=None, route_ids=None, vehicle_ids=None, to
 	
 @dajaxice_register
 def get_vehicles(request, route_ids=None, vehicle_ids=None):
-	return simplejson.dumps(a.get_vehicles(route_ids, vehicle_ids))
+	return simplejson.dumps({'route_ids':route_ids, 'response':a.get_vehicles(route_ids, vehicle_ids)})
 

@@ -86,7 +86,7 @@ function addPatterns(patterns) {
 }
 
 function getPatterns() {
-	Dajaxice.cta.get_pattern(addPatterns, {'route':$('#route-selector').val()});
+	Dajaxice.cta.get_pattern(addPatterns, {'route_id':$('#route-selector').val()});
 }
 
 function getStopInfoContent(stop_id, stop_name) {
@@ -185,19 +185,20 @@ function addVehicle(vehicle) {
 
 function addVehicles(new_vehicles) {
 	console.log(new_vehicles);
-	for (var i=0;i<new_vehicles.length;i++) {
-		addVehicle(new_vehicles[i]);
-	}
-}
-
-function getVehicles(){
-	var route_id = $('#route-selector').val();
+	var route_id = new_vehicles['route_ids'][0]; //TODO: generalize to multiple route_ids
 	if (typeof vehicles[route_id] !== 'undefined') {
 		for (var i=0;i<vehicles[route_id].length;i++) {
 			vehicles[route_id][i]['marker'].setMap(null);
 		}
 	}
 	vehicles[route_id] = [];
+	for (var i=0;i<new_vehicles['response'].length;i++) {
+		addVehicle(new_vehicles['response'][i]);
+	}
+}
+
+function getVehicles(){
+	var route_id = $('#route-selector').val();
 	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[route_id]})
 }
 
