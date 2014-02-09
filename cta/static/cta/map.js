@@ -183,17 +183,39 @@ function addVehicle(vehicle) {
 	vehicles[vehicle.route_id].push(vehicle_marker);
 }
 
+function updateVehicle(oldVehicle, newVehicle) {
+	console.log(oldVehicle, newVehicle);
+	var fromLat = oldVehicle['latitude'];
+	var fromLng = oldVehicle['longitude'];
+	var toLat = newVehicle['latitude'];
+	var toLng = newVehicle['longitude'];
+	
+	var intermediateLatLngs = [];
+	var curLat;
+	var curLng;
+	for (var i=0; i<1; i+=.01) {
+		curLat = fromLat + i*(toLat-fromLat);
+		curLng = fromLng + i*(toLng-fromLng);
+		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
+	}
+	console.log(intermediateLatLngs);
+}
+
 function addVehicles(new_vehicles) {
 	console.log(new_vehicles);
 	var route_id = new_vehicles['route_ids'][0]; //TODO: generalize to multiple route_ids
 	if (typeof vehicles[route_id] !== 'undefined') {
 		for (var i=0;i<vehicles[route_id].length;i++) {
-			vehicles[route_id][i]['marker'].setMap(null);
+			updateVehicle(vehicles[route_id][i], new_vehicles['response'][i])
+			//vehicles[route_id][i]['marker'].setMap(null);
 		}
 	}
-	vehicles[route_id] = [];
-	for (var i=0;i<new_vehicles['response'].length;i++) {
-		addVehicle(new_vehicles['response'][i]);
+	else {
+		console.log('else');
+		vehicles[route_id] = [];
+		for (var i=0;i<new_vehicles['response'].length;i++) {
+			addVehicle(new_vehicles['response'][i]);
+		}
 	}
 }
 
