@@ -178,7 +178,9 @@ function addVehicle(vehicle) {
 		rotation: vehicle.heading,
 	  },
 	});
-	vehicles[vehicle.route_id].push(marker);
+	var vehicle_marker = vehicle;
+	vehicle_marker['marker'] = marker;
+	vehicles[vehicle.route_id].push(vehicle_marker);
 }
 
 function addVehicles(new_vehicles) {
@@ -192,7 +194,7 @@ function getVehicles(){
 	var route_id = $('#route-selector').val();
 	if (typeof vehicles[route_id] !== 'undefined') {
 		for (var i=0;i<vehicles[route_id].length;i++) {
-			vehicles[route_id][i].setMap(null);
+			vehicles[route_id][i]['marker'].setMap(null);
 		}
 	}
 	vehicles[route_id] = [];
