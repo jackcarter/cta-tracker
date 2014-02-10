@@ -163,7 +163,7 @@ function addStops(routeStops) {
 }
 
 function getStops(){
-	Dajaxice.cta.get_stops(addStops, {'route':$('#route-selector').val()});
+	Dajaxice.cta.get_stops(addStops, {'route_id':$('#route-selector').val()});
 }
 
 function addVehicle(vehicle) {
