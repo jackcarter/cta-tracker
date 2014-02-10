@@ -19,8 +19,8 @@ def get_routes_from_cache():
 	return routes
 
 def get_directions_from_cache(route_id):
-	route = route_col.find({'route_id':route_id},{'_id':0})
-	
+	return route_col.find_one({'route_id':route_id})['directions']
+
 def get_stops_helper(route_id):
 	return_list = []
 	directions = get_directions_from_cache(route_id)
