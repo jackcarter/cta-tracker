@@ -166,17 +166,21 @@ function getStops(){
 	Dajaxice.cta.get_stops(addStops, {'route_id':$('#route-selector').val()});
 }
 
+function getBusIcon(heading) {
+	return {
+		path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+		scale: 3,
+		strokeColor: 'red',
+		rotation: heading,
+	  };
+}
+
 function addVehicle(vehicle) {
 	var latLng = new google.maps.LatLng(vehicle.latitude, vehicle.longitude);
 	var marker = new google.maps.Marker({
 	  position: latLng,
 	  map: map,
-	  icon: {
-		path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-		scale: 3,
-		strokeColor: 'red',
-		rotation: vehicle.heading,
-	  },
+	  icon: getBusIcon(vehicle.heading),
 	});
 	var vehicle_marker = vehicle;
 	vehicle_marker['marker'] = marker;
@@ -223,7 +227,42 @@ function updateVehicle(oldVehicle, newVehicle) {
 */
 
 function updateVehicle(newVehicle, oldVehicle) {
-	oldVehicle['asdf']='fuck';
+	var fromLat = oldVehicle['latitude'];
+	var fromLng = oldVehicle['longitude'];
+	var toLat = newVehicle['latitude'];
+	var toLng = newVehicle['longitude'];
+	var fromHead = oldVehicle['heading'];
+	var toHead = newVehicle['heading'];
+	var marker = oldVehicle['marker'];
+	oldVehicle = newVehicle;
+	oldVehicle['marker'] = marker;
+	var intermediateLatLngs = [];
+	var intermediateHeadings = [];
+	var curLat;
+	var curLng;
+	var curHead;
+	for (var i=0; i<1; i+=.01) {
+		curLat = fromLat + i*(toLat-fromLat);
+		curLng = fromLng + i*(toLng-fromLng);
+		curHead = fromHead + i*(toHead-fromHead);
+		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
+		intermediateHeadings.push(curHead);
+	}
+	function animate(marker, intermediateLatLngs, intermediateHeadings) {
+		marker.setPosition(intermediateLatLngs[0]);
+		marker.setIcon(getBusIcon(intermediateHeadings[0]));
+		var newIntermediateLatLngs = intermediateLatLngs.slice(1);
+		var newIntermediateHeadings = intermediateHeadings.slice(1);
+		if (newIntermediateLatLngs.length > 0) {
+			setTimeout(function() {
+				animate(marker, newIntermediateLatLngs, newIntermediateHeadings)
+			}, 10);
+		} else {
+			
+		}
+	}
+	animate(oldVehicle['marker'], intermediateLatLngs, intermediateHeadings);
+	return oldVehicle;
 }
 
 function addOrUpdateVehicle(newVehicle) {
@@ -233,10 +272,7 @@ function addOrUpdateVehicle(newVehicle) {
 	for (var i=0;i<vehicles[route_id].length && !vehicleFound;i++) {
 		//Update old vehicle if we already have this vehicle_id on this route
 		if (vehicles[route_id][i]['vehicle_id'] == newVehicle['vehicle_id']) {
-			console.log(vehicles[route_id][i]);
-			console.log('about to update');
-			updateVehicle(newVehicle, vehicles[route_id][i]);
-			console.log(vehicles[route_id][i]);
+			vehicles[route_id][i] = updateVehicle(newVehicle, vehicles[route_id][i]);
 			vehicleFound = true;
 		}
 	}
