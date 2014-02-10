@@ -242,8 +242,10 @@ function updateVehicle(newVehicle, oldVehicle) {
 	var curLng;
 	var curHead;
 	var degrees = toHead - fromHead;
-	if (Math.abs(degrees)>180) {
-		degrees = 0 - degrees;
+	if (degrees>180) {
+		degrees -= 360;
+	} else if (degrees<-180) {
+		degrees += 360;
 	}
 	for (var i=0; i<1; i+=.01) {
 		curLat = fromLat + i*(toLat-fromLat);
