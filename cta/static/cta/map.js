@@ -244,7 +244,7 @@ function updateVehicle(newVehicle, oldVehicle) {
 	for (var i=0; i<1; i+=.01) {
 		curLat = fromLat + i*(toLat-fromLat);
 		curLng = fromLng + i*(toLng-fromLng);
-		curHead = fromHead + i*(toHead-fromHead);
+		curHead = fromHead + i*((toHead-fromHead) % 360);
 		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
 		intermediateHeadings.push(curHead);
 	}
