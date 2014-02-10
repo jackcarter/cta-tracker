@@ -225,7 +225,7 @@ function updateVehicle(oldVehicle, newVehicle) {
 	animate(oldVehicle['marker'], intermediateLatLngs);
 }
 */
-
+var mark;
 function updateVehicle(newVehicle, oldVehicle) {
 	var fromLat = oldVehicle['latitude'];
 	var fromLng = oldVehicle['longitude'];
@@ -241,10 +241,14 @@ function updateVehicle(newVehicle, oldVehicle) {
 	var curLat;
 	var curLng;
 	var curHead;
+	var degrees = toHead - fromHead;
+	if (Math.abs(degrees)>180) {
+		degrees = 0 - degrees;
+	}
 	for (var i=0; i<1; i+=.01) {
 		curLat = fromLat + i*(toLat-fromLat);
 		curLng = fromLng + i*(toLng-fromLng);
-		curHead = fromHead + i*((toHead-fromHead) % 360);
+		curHead = fromHead + i*(degrees);
 		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
 		intermediateHeadings.push(curHead);
 	}
@@ -262,6 +266,7 @@ function updateVehicle(newVehicle, oldVehicle) {
 		}
 	}
 	animate(oldVehicle['marker'], intermediateLatLngs, intermediateHeadings);
+	mark = oldVehicle['marker'];
 	return oldVehicle;
 }
 
