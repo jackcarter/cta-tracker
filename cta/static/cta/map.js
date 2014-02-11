@@ -187,7 +187,6 @@ function addVehicle(vehicle) {
 	vehicles[vehicle.route_id].push(vehicle_marker);
 }
 
-var mark;
 function updateVehicle(newVehicle, oldVehicle) {
 	var fromLat = oldVehicle['latitude'];
 	var fromLng = oldVehicle['longitude'];
@@ -228,7 +227,6 @@ function updateVehicle(newVehicle, oldVehicle) {
 		}
 	}
 	animate(oldVehicle['marker'], intermediateLatLngs, intermediateHeadings);
-	mark = oldVehicle['marker'];
 	return oldVehicle;
 }
 
