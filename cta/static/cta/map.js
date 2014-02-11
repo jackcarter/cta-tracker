@@ -187,44 +187,6 @@ function addVehicle(vehicle) {
 	vehicles[vehicle.route_id].push(vehicle_marker);
 }
 
-/*
-function updateVehicle(oldVehicle, newVehicle) {
-	var fromLat = oldVehicle['latitude'];
-	var fromLng = oldVehicle['longitude'];
-	var toLat = newVehicle['latitude'];
-	var toLng = newVehicle['longitude'];
-	
-	//Update object in vehicles array
-	var marker = oldVehicle['marker'];
-	oldVehicle = newVehicle;
-	oldVehicle['marker'] = marker;
-	
-	var intermediateLatLngs = [];
-	var curLat;
-	var curLng;
-	for (var i=0; i<1; i+=.01) {
-		curLat = fromLat + i*(toLat-fromLat);
-		curLng = fromLng + i*(toLng-fromLng);
-		intermediateLatLngs.push(new google.maps.LatLng(curLat, curLng));
-	}
-	function animate(marker, intermediateLatLngs) {
-		marker.setPosition(intermediateLatLngs[0]);
-		marker.position = intermediateLatLngs[0];
-		var newIntermediateLatLngs = intermediateLatLngs.slice(1);
-		if (newIntermediateLatLngs.length > 0) {
-			setTimeout(function() {
-				animate(marker, newIntermediateLatLngs)
-			}, 10);
-		} else {
-			console.log('end ' + oldVehicle.vehicle_id);
-			console.log(oldVehicle);
-			console.log(newVehicle);
-			console.log(marker);
-		}
-	}
-	animate(oldVehicle['marker'], intermediateLatLngs);
-}
-*/
 var mark;
 function updateVehicle(newVehicle, oldVehicle) {
 	var fromLat = oldVehicle['latitude'];
