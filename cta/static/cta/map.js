@@ -15,21 +15,25 @@ function getDivId(stop_id) {
 	return 'wrapper-' + stop_id;
 }
 
+function getPredictions(stop_id) {
+	Dajaxice.cta.get_predictions(openStopInfo, {'stop_ids':[stop_id]});
+}
+
 function addUpdateButton(stop_id) {
 	var div_id = getDivId(stop_id)
 		, buttonId = 'button-' + stop_id;
 	$('#'+div_id).append($('<button/>', {
-		text: 'Update predictions',
-		id: buttonId,
-		click: function(){getPredictions(stop_id);},
+		text: 'Update predictions'
+		, id: buttonId
+		, click: function(){getPredictions(stop_id);}
 	}));
 	refreshStopInfo(stop_id);
 }
 
 function addRoute(routeId, routeName) {
 	$('#route-selector').append($("<option/>", {
-			value: routeId,
-			text: routeId + ' - ' + routeName
+			value: routeId
+			, text: routeId + ' - ' + routeName
 		}));
 }
 
@@ -57,47 +61,10 @@ function get_random_color() {
 	return color;
 }
 
-function addPattern(data) {
-	var path = []
-		, latLng
-		, points = data.point
-		, i
-		, line = new google.maps.Polyline({
-			path: path,
-			strokeColor: get_random_color(),
-			strokeOpacity: 0.5,
-			strokeWeight: 4
-	  	});
-
-	for (i=0; i<points.length; i++) {
-		if (points[i].type === stopTypeIndicator) {
-			addStop(data.route_id, data.direction, points[i]);
-		}
-		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
-		path.push(latLng);
-	}
-	
-	line.setMap(map);
-}
-
-function addPatterns(patterns) {
-	var pattern;
-	for (pattern in patterns) {
-		if (patterns.hasOwnProperty(pattern)) {
-			//Skip prototype chain
-			addPattern(patterns[pattern]);
-		}
-	}
-}
-
-function getPatterns() {
-	Dajaxice.cta.get_pattern(addPatterns, {'route_id':$('#route-selector').val()});
-}
-
 function getStopInfoContent(stop_id, stop_name) {
 	var div_id = getDivId(stop_id)
 		, content = $('<div/>', {
-			id: div_id,
+			id: div_id
 		});
 	content.append(stop_name + '<br/>');
 	content.addClass('infoWindow');
@@ -120,44 +87,47 @@ function openStopInfo(predictions) {
 		, predicted_time
 		, timestamp
 		, time_until
-		, route_id;
+		, route_id
+		, i;
 
-	for (var i=0; i<predictions.length; i++) {
+	for (i=0; i<predictions.length; i++) {
 		predicted_time = new Date(predictions[i].predicted_time);
 		timestamp = new Date(predictions[i].timestamp);
 		time_until = (predicted_time - timestamp)/(1000*60);
 		route_id = predictions[i].route_id;
 		content.append($('<div/>', {
-			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm',
+			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm'
 		}))	
 	}
 	stopInfo.close();
 	stopInfo.setContent(content[0]);
 	stopInfo.open(map, marker);
-	window.setTimeout(function(){addUpdateButton(stop_id)}, 1000*60);
+	window.setTimeout(function(){addUpdateButton(stop_id);}, 1000*60);
 }
 
-function addStop(route_id, direction, stop) {
+function addStop(direction, stop) {
 	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude);
 	var marker = new google.maps.Marker({
 	  position: latLng,
 	  map: map,
 	  icon: {
-		path: google.maps.SymbolPath.CIRCLE,
-		scale: 3,
-		strokeColor: 'black',
-	  },
+		path: google.maps.SymbolPath.CIRCLE
+		, scale: 3
+		, strokeColor: 'black'
+	  }
 	});
 	markers[stop.stop_id]=marker;
 	listenerHandles[stop.stop_id] = google.maps.event.addListener(marker, 'click', function() {
 		getPredictions(stop.stop_id);
 	});
 }
-
+var asdf;
 function addStops(routeStops) {
-	for (var j=0; j<routeStops.length; j++) {
-		for (var i=0; i<routeStops[j].stops.length; i++) {
-			addStop(routeStops[j].route_id, routeStops[j].direction, routeStops[j].stops[i]);
+	var i, j;
+	asdf = routeStops;
+	for (j=0; j<routeStops.length; j++) {
+		for (i=0; i<routeStops[j].stops.length; i++) {
+			addStop(routeStops[j].direction, routeStops[j].stops[i]);
 		}	
 	}
 }
@@ -166,49 +136,90 @@ function getStops(){
 	Dajaxice.cta.get_stops(addStops, {'route_id':$('#route-selector').val()});
 }
 
+function addPattern(data) {
+	var path = []
+		, latLng
+		, points = data.point
+		, i
+		, line = new google.maps.Polyline({
+			path: path,
+			strokeColor: get_random_color(),
+			strokeOpacity: 0.5,
+			strokeWeight: 4
+	  	});
+
+	for (i=0; i<points.length; i++) {
+		if (points[i].type === stopTypeIndicator) {
+			addStop(data.direction, points[i]);
+		}
+		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
+		path.push(latLng);
+	}
+	
+	line.setMap(map);
+}
+
+function addPatterns(patterns) {
+	var pattern;
+	for (pattern in patterns) {
+		if (patterns.hasOwnProperty(pattern)) {
+			//Skip prototype chain
+			addPattern(patterns[pattern]);
+		}
+	}
+}
+
+function getPatterns() {
+	Dajaxice.cta.get_pattern(addPatterns, {'route_id':$('#route-selector').val()});
+}
+
 function getBusIcon(heading) {
 	return {
-		path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-		scale: 3,
-		strokeColor: 'red',
-		rotation: heading,
+		path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+		, scale: 3
+		, strokeColor: 'red'
+		, rotation: heading
 	  };
 }
 
 function addVehicle(vehicle) {
-	var latLng = new google.maps.LatLng(vehicle.latitude, vehicle.longitude);
-	var marker = new google.maps.Marker({
-		position: latLng,
-		map: map,
-		icon: getBusIcon(vehicle.heading),
-	});
-	var vehicle_marker = vehicle;
+	var latLng = new google.maps.LatLng(vehicle.latitude, vehicle.longitude)
+		, marker = new google.maps.Marker({
+			position: latLng,
+			map: map,
+			icon: getBusIcon(vehicle.heading),
+		})
+		, vehicle_marker = vehicle;
+
 	vehicle_marker['marker'] = marker;
 	vehicles[vehicle.route_id][vehicle.vehicle_id]=vehicle_marker;
 }
 
 function updateVehicle(newVehicle, oldVehicle) {
-	var fromLat = oldVehicle['latitude'];
-	var fromLng = oldVehicle['longitude'];
-	var toLat = newVehicle['latitude'];
-	var toLng = newVehicle['longitude'];
-	var fromHead = oldVehicle['heading'];
-	var toHead = newVehicle['heading'];
-	var marker = oldVehicle['marker'];
+	var fromLat = oldVehicle['latitude']
+	, fromLng = oldVehicle['longitude']
+	, toLat = newVehicle['latitude']
+	, toLng = newVehicle['longitude']
+	, fromHead = oldVehicle['heading']
+	, toHead = newVehicle['heading']
+	, marker = oldVehicle['marker']
+	, intermediateLatLngs = []
+	, intermediateHeadings = []
+	, curLat
+	, curLng
+	, curHead
+	, degrees = toHead - fromHead
+	, i;
+	
 	oldVehicle = newVehicle;
 	oldVehicle['marker'] = marker;
-	var intermediateLatLngs = [];
-	var intermediateHeadings = [];
-	var curLat;
-	var curLng;
-	var curHead;
-	var degrees = toHead - fromHead;
+	
 	if (degrees>180) {
 		degrees -= 360;
 	} else if (degrees<-180) {
 		degrees += 360;
 	}
-	for (var i=0; i<1; i+=.01) {
+	for (i=0; i<1; i+=.01) {
 		curLat = fromLat + i*(toLat-fromLat);
 		curLng = fromLng + i*(toLng-fromLng);
 		curHead = fromHead + i*(degrees);
