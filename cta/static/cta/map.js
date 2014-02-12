@@ -1,3 +1,6 @@
+/*jslint browser: true*/
+/*jslint plusplus: true*/
+/*global $, jQuery, alert, google, Dajaxice*/
 "use strict";
 var map;
 var markers = [];
@@ -13,6 +16,49 @@ function refreshStopInfo(stop_id) {
 
 function getDivId(stop_id) {
 	return 'wrapper-' + stop_id;
+}
+
+function sortByRouteId(objects) {
+	return objects.sort(function(a, b) {
+		return a.route_id - b.route_id;
+	});
+}
+
+function getStopInfoContent(stop_id, stop_name) {
+	var div_id = getDivId(stop_id)
+		, content = $('<div/>', {
+			id: div_id
+		});
+	content.append(stop_name + '<br/>');
+	content.addClass('infoWindow');
+	return content;
+}
+
+function openStopInfo(predictions) {
+	predictions = sortByRouteId(predictions);
+	var stop_id = predictions[0].stop_id
+		, stop_name = predictions[0].stop_name
+		, marker=markers[stop_id]
+		, content = getStopInfoContent(stop_id, stop_name)
+		, predicted_time
+		, timestamp
+		, time_until
+		, route_id
+		, i;
+
+	for (i=0; i<predictions.length; i++) {
+		predicted_time = new Date(predictions[i].predicted_time);
+		timestamp = new Date(predictions[i].timestamp);
+		time_until = (predicted_time - timestamp)/(1000*60);
+		route_id = predictions[i].route_id;
+		content.append($('<div/>', {
+			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm'
+		}))
+	}
+	stopInfo.close();
+	stopInfo.setContent(content[0]);
+	stopInfo.open(map, marker);
+	window.setTimeout(function(){addUpdateButton(stop_id);}, 1000*60);
 }
 
 function getPredictions(stop_id) {
@@ -61,53 +107,9 @@ function get_random_color() {
 	return color;
 }
 
-function getStopInfoContent(stop_id, stop_name) {
-	var div_id = getDivId(stop_id)
-		, content = $('<div/>', {
-			id: div_id
-		});
-	content.append(stop_name + '<br/>');
-	content.addClass('infoWindow');
-	return content;
-}
-
-function sortByRouteId(objects) {
-	return objects.sort(function(a, b) {
-		return a.route_id - b.route_id;
-	});
-}
-
-function openStopInfo(predictions) {
-	predictions = sortByRouteId(predictions);
-	var prediction
-		, stop_id = predictions[0].stop_id
-		, stop_name = predictions[0].stop_name
-		, marker=markers[stop_id]
-		, content = getStopInfoContent(stop_id, stop_name)
-		, predicted_time
-		, timestamp
-		, time_until
-		, route_id
-		, i;
-
-	for (i=0; i<predictions.length; i++) {
-		predicted_time = new Date(predictions[i].predicted_time);
-		timestamp = new Date(predictions[i].timestamp);
-		time_until = (predicted_time - timestamp)/(1000*60);
-		route_id = predictions[i].route_id;
-		content.append($('<div/>', {
-			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm'
-		}))	
-	}
-	stopInfo.close();
-	stopInfo.setContent(content[0]);
-	stopInfo.open(map, marker);
-	window.setTimeout(function(){addUpdateButton(stop_id);}, 1000*60);
-}
-
-function addStop(direction, stop) {
-	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude);
-	var marker = new google.maps.Marker({
+function addStop(stop) {
+	var latLng = new google.maps.LatLng(stop.latitude, stop.longitude)
+		, marker = new google.maps.Marker({
 	  position: latLng,
 	  map: map,
 	  icon: {
@@ -127,7 +129,7 @@ function addStops(routeStops) {
 	asdf = routeStops;
 	for (j=0; j<routeStops.length; j++) {
 		for (i=0; i<routeStops[j].stops.length; i++) {
-			addStop(routeStops[j].direction, routeStops[j].stops[i]);
+			addStop(routeStops[j].stops[i]);
 		}	
 	}
 }
@@ -150,7 +152,7 @@ function addPattern(data) {
 
 	for (i=0; i<points.length; i++) {
 		if (points[i].type === stopTypeIndicator) {
-			addStop(data.direction, points[i]);
+			addStop(points[i]);
 		}
 		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
 		path.push(latLng);
@@ -191,18 +193,18 @@ function addVehicle(vehicle) {
 		})
 		, vehicle_marker = vehicle;
 
-	vehicle_marker['marker'] = marker;
+	vehicle_marker.marker = marker;
 	vehicles[vehicle.route_id][vehicle.vehicle_id]=vehicle_marker;
 }
 
 function updateVehicle(newVehicle, oldVehicle) {
-	var fromLat = oldVehicle['latitude']
-	, fromLng = oldVehicle['longitude']
-	, toLat = newVehicle['latitude']
-	, toLng = newVehicle['longitude']
-	, fromHead = oldVehicle['heading']
-	, toHead = newVehicle['heading']
-	, marker = oldVehicle['marker']
+	var fromLat = oldVehicle.latitude
+	, fromLng = oldVehicle.longitude
+	, toLat = newVehicle.latitude
+	, toLng = newVehicle.longitude
+	, fromHead = oldVehicle.heading
+	, toHead = newVehicle.heading
+	, marker = oldVehicle.marker
 	, intermediateLatLngs = []
 	, intermediateHeadings = []
 	, curLat
@@ -212,14 +214,14 @@ function updateVehicle(newVehicle, oldVehicle) {
 	, i;
 	
 	oldVehicle = newVehicle;
-	oldVehicle['marker'] = marker;
+	oldVehicle.marker = marker;
 	
 	if (degrees>180) {
 		degrees -= 360;
 	} else if (degrees<-180) {
 		degrees += 360;
 	}
-	for (i=0; i<1; i+=.01) {
+	for (i=0; i<1; i+=0.01) {
 		curLat = fromLat + i*(toLat-fromLat);
 		curLng = fromLng + i*(toLng-fromLng);
 		curHead = fromHead + i*(degrees);
@@ -235,29 +237,27 @@ function updateVehicle(newVehicle, oldVehicle) {
 			setTimeout(function() {
 				animate(marker, newIntermediateLatLngs, newIntermediateHeadings)
 			}, 10);
-		} else {
-			
 		}
 	}
 //	console.log(oldVehicle, newVehicle);
-	animate(oldVehicle['marker'], intermediateLatLngs, intermediateHeadings);
+	animate(oldVehicle.marker, intermediateLatLngs, intermediateHeadings);
 	return oldVehicle;
 }
 
 function addOrUpdateVehicle(newVehicle) {
-	var route_id = newVehicle['route_id'];
-	var vehicleFound = false;
-	var oldVehicle;
-	for (var oldVehicleId in vehicles[route_id]) {
-		if (!vehicles[route_id].hasOwnProperty(oldVehicleId)) {
+	var route_id = newVehicle.route_id
+	, vehicleFound = false
+	, oldVehicleId;
+	
+	for (oldVehicleId in vehicles[route_id]) {
+		if (vehicles[route_id].hasOwnProperty(oldVehicleId)) {
 			//Skip prototype chain
-			continue;
-		}
-		
-		//Update old vehicle if we already have this vehicle_id on this route
-		if (oldVehicleId === newVehicle.vehicle_id) {
-			vehicles[route_id][oldVehicleId] = updateVehicle(newVehicle, vehicles[route_id][oldVehicleId]);
-			vehicleFound = true;
+			//Update old vehicle if we already have this vehicle_id on this route
+			if (oldVehicleId === newVehicle.vehicle_id) {
+				vehicles[route_id][oldVehicleId] = updateVehicle(newVehicle, vehicles[route_id][oldVehicleId]);
+				vehicleFound = true;
+			}
+			
 		}
 	}
 	//If this vehicle ID wasn't on the route last time we updated, we won't have found it
@@ -268,33 +268,36 @@ function addOrUpdateVehicle(newVehicle) {
 }
 
 function updateVehicles(newVehicles) {
-	for (var i=0;i<newVehicles.length;i++) {
+	var i;
+	
+	for (i=0;i<newVehicles.length;i++) {
 		addOrUpdateVehicle(newVehicles[i]);
 	}
 }
 
 //TODO: Finish this
 function removeMissingVehicles(newVehicles, routeId) {
-	var oldIds = [];
-	var newIds = []; 
-	for (var i=0;i<vehicles[routeId].length;i++) {
-		oldIds.push(vehicles[routeId][i]['vehicle_id']);
+	var oldIds = []
+	, newIds = []
+	, i;
+	for (i=0;i<vehicles[routeId].length;i++) {
+		oldIds.push(vehicles[routeId][i].vehicle_id);
 	}
-	for (var i=0;i<newVehicles.length;i++) {
-		oldIds.push(newVehicles[i]['vehicle_id']);
+	for (i=0;i<newVehicles.length;i++) {
+		oldIds.push(newVehicles[i].vehicle_id);
 	}
 	vehicles[routeId] = $(vehicles[routeId]).not(newVehicles).get();
 }
 
 var asdf;
 function addVehicles(new_vehicles) {
-	asdf = new_vehicles['response'];
-	var route_id = new_vehicles['route_ids'][0]; //TODO: generalize to multiple route_ids
+	asdf = new_vehicles.response;
+	var route_id = new_vehicles.route_ids[0]; //TODO: generalize to multiple route_ids
 	if (typeof vehicles[route_id] === 'undefined') {
 		//this will break if I try to call getVehicles for 2 routes; one loaded and one not
 		vehicles[route_id] = {};
 	}
-	updateVehicles(new_vehicles['response'], route_id);
+	updateVehicles(new_vehicles.response, route_id);
 }
 
 function getVehicles(){
