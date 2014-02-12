@@ -16,21 +16,14 @@ function getDivId(stop_id) {
 }
 
 function addUpdateButton(stop_id) {
-	var div_id = getDivId(stop_id);
-	var buttonId = 'button-' + stop_id;
+	var div_id = getDivId(stop_id)
+		, buttonId = 'button-' + stop_id;
 	$('#'+div_id).append($('<button/>', {
 		text: 'Update predictions',
 		id: buttonId,
-		click: function(){getPredictions(stop_id)},
+		click: function(){getPredictions(stop_id);},
 	}));
 	refreshStopInfo(stop_id);
-}
-
-function addRoutes(routes) {
-	var route;
-	for (route in routes) {
-		addRoute(routes[route].route_id, routes[route].route_name);
-	  }
 }
 
 function addRoute(routeId, routeName) {
@@ -40,48 +33,60 @@ function addRoute(routeId, routeName) {
 		}));
 }
 
+function addRoutes(routes) {
+	var route;
+	for (route in routes) {
+		if (routes.hasOwnProperty(route)) {
+			//Skip prototype chain
+			addRoute(routes[route].route_id, routes[route].route_name);
+		}
+	}
+}
+
 function getRoutes() {
 	Dajaxice.cta.get_routes(addRoutes);
 }
 
 function get_random_color() {
-	var letters = '0123456789ABCDEF'.split('');
-	var color = '#';
-	for (var i = 0; i < 6; i++ ) {
+	var letters = '0123456789ABCDEF'.split('')
+		, color = '#'
+		, i;
+	for (i = 0; i < 6; i++ ) {
 		color += letters[Math.round(Math.random() * 15)];
 	}
 	return color;
 }
 
 function addPattern(data) {
-	var path = [];
-	var point;
-	var latLng;
-	var points = data['point']
-	var i;
+	var path = []
+		, latLng
+		, points = data.point
+		, i
+		, line = new google.maps.Polyline({
+			path: path,
+			strokeColor: get_random_color(),
+			strokeOpacity: 0.5,
+			strokeWeight: 4
+	  	});
 
-	for (var i=0; i<points.length; i++) {
+	for (i=0; i<points.length; i++) {
 		if (points[i].type === stopTypeIndicator) {
-			addStop(data.route_id, data.direction, points[i])
+			addStop(data.route_id, data.direction, points[i]);
 		}
 		latLng = new google.maps.LatLng(points[i].latitude, points[i].longitude);
 		path.push(latLng);
 	}
-
-	var line = new google.maps.Polyline({
-		path: path,
-		strokeColor: get_random_color(),
-		strokeOpacity: 0.5,
-		strokeWeight: 4
-	  });
-
-	  line.setMap(map);
+	
+	line.setMap(map);
 }
 
 function addPatterns(patterns) {
 	var pattern;
 	for (pattern in patterns) {
-		addPattern(patterns[pattern]);
+		if (patterns.hasOwnProperty(pattern)) {
+			//Skip prototype chain
+			addPattern(patterns[pattern]);
+		}
 	}
 }
 
@@ -90,12 +95,10 @@ function getPatterns() {
 }
 
 function getStopInfoContent(stop_id, stop_name) {
-	var stop_id = stop_id;
-	var stop_name = stop_name;
-	var div_id = getDivId(stop_id);
-	var content = $('<div/>', {
-		id: div_id,
-	});
+	var div_id = getDivId(stop_id)
+		, content = $('<div/>', {
+			id: div_id,
+		});
 	content.append(stop_name + '<br/>');
 	content.addClass('infoWindow');
 	return content;
@@ -103,21 +106,22 @@ function getStopInfoContent(stop_id, stop_name) {
 
 function sortByRouteId(objects) {
 	return objects.sort(function(a, b) {
-		return a.route_id - b.route_id
-	})
+		return a.route_id - b.route_id;
+	});
 }
 
 function openStopInfo(predictions) {
 	predictions = sortByRouteId(predictions);
-	var prediction;
-	var stop_id = predictions[0].stop_id;
-	var stop_name = predictions[0].stop_name;
-	var marker=markers[stop_id];
-	var content = getStopInfoContent(stop_id, stop_name);
-	var predicted_time;
-	var timestamp;
-	var time_until;
-	var route_id;
+	var prediction
+		, stop_id = predictions[0].stop_id
+		, stop_name = predictions[0].stop_name
+		, marker=markers[stop_id]
+		, content = getStopInfoContent(stop_id, stop_name)
+		, predicted_time
+		, timestamp
+		, time_until
+		, route_id;
+
 	for (var i=0; i<predictions.length; i++) {
 		predicted_time = new Date(predictions[i].predicted_time);
 		timestamp = new Date(predictions[i].timestamp);
@@ -131,10 +135,6 @@ function openStopInfo(predictions) {
 	stopInfo.setContent(content[0]);
 	stopInfo.open(map, marker);
 	window.setTimeout(function(){addUpdateButton(stop_id)}, 1000*60);
-}
-
-function getPredictions(stop_id) {
-	Dajaxice.cta.get_predictions(openStopInfo, {'stop_ids':[stop_id]});
 }
 
 function addStop(route_id, direction, stop) {
@@ -178,13 +178,13 @@ function getBusIcon(heading) {
 function addVehicle(vehicle) {
 	var latLng = new google.maps.LatLng(vehicle.latitude, vehicle.longitude);
 	var marker = new google.maps.Marker({
-	  position: latLng,
-	  map: map,
-	  icon: getBusIcon(vehicle.heading),
+		position: latLng,
+		map: map,
+		icon: getBusIcon(vehicle.heading),
 	});
 	var vehicle_marker = vehicle;
 	vehicle_marker['marker'] = marker;
-	vehicles[vehicle.route_id].push(vehicle_marker);
+	vehicles[vehicle.route_id][vehicle.vehicle_id]=vehicle_marker;
 }
 
 function updateVehicle(newVehicle, oldVehicle) {
@@ -228,18 +228,24 @@ function updateVehicle(newVehicle, oldVehicle) {
 			
 		}
 	}
+//	console.log(oldVehicle, newVehicle);
 	animate(oldVehicle['marker'], intermediateLatLngs, intermediateHeadings);
 	return oldVehicle;
 }
 
 function addOrUpdateVehicle(newVehicle) {
 	var route_id = newVehicle['route_id'];
-	var vehicle_id = newVehicle['vehicle_id'];
 	var vehicleFound = false;
-	for (var i=0;i<vehicles[route_id].length && !vehicleFound;i++) {
+	var oldVehicle;
+	for (var oldVehicleId in vehicles[route_id]) {
+		if (!vehicles[route_id].hasOwnProperty(oldVehicleId)) {
+			//Skip prototype chain
+			continue;
+		}
+		
 		//Update old vehicle if we already have this vehicle_id on this route
-		if (vehicles[route_id][i]['vehicle_id'] == newVehicle['vehicle_id']) {
-			vehicles[route_id][i] = updateVehicle(newVehicle, vehicles[route_id][i]);
+		if (oldVehicleId === newVehicle.vehicle_id) {
+			vehicles[route_id][oldVehicleId] = updateVehicle(newVehicle, vehicles[route_id][oldVehicleId]);
 			vehicleFound = true;
 		}
 	}
@@ -266,14 +272,16 @@ function removeMissingVehicles(newVehicles, routeId) {
 	for (var i=0;i<newVehicles.length;i++) {
 		oldIds.push(newVehicles[i]['vehicle_id']);
 	}
-	console.log('add the set subtraction code here');
+	vehicles[routeId] = $(vehicles[routeId]).not(newVehicles).get();
 }
 
+var asdf;
 function addVehicles(new_vehicles) {
+	asdf = new_vehicles['response'];
 	var route_id = new_vehicles['route_ids'][0]; //TODO: generalize to multiple route_ids
 	if (typeof vehicles[route_id] === 'undefined') {
 		//this will break if I try to call getVehicles for 2 routes; one loaded and one not
-		vehicles[route_id] = [];
+		vehicles[route_id] = {};
 	}
 	updateVehicles(new_vehicles['response'], route_id);
 }
