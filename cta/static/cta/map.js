@@ -248,23 +248,21 @@ function addOrUpdateVehicles(newVehicles, route_id) {
 	var i
 		, oldVehicleId
 		, vehicleFound;
-	asdf = newVehicles;
 	for (oldVehicleId in vehicles[route_id]) {
 		if (vehicles[route_id].hasOwnProperty(oldVehicleId)) {
 			vehicleFound = false;
-			for (i=0;i<newVehicles.length;i++) {
+			for (i=0;i<newVehicles.length && !vehicleFound;i++) {
 				if (newVehicles[i].vehicle_id === oldVehicleId) {
 					vehicleFound = true;
-					break;
+					vehicles[route_id][oldVehicleId] = updateVehicle(newVehicles[i], vehicles[route_id][oldVehicleId]);
+					//Remove that vehicle:
+					newVehicles.splice(i,1);
 				}
 			}
-			if (vehicleFound) {
-				vehicles[route_id][oldVehicleId] = updateVehicle(newVehicles[i], vehicles[route_id][oldVehicleId]);
-				//Remove that vehicle:
-				newVehicles.splice(i,1);
-			} else {
+
+			if (!vehicleFound) {
 				//If the vehicle is not in the newVehicles array, remove it:
-				delete vehicles[newVehicles[i].vehicle_id];
+				delete vehicles[route_id][oldVehicleId];
 			}
 		}
 	}
@@ -275,9 +273,7 @@ function addOrUpdateVehicles(newVehicles, route_id) {
 	}
 }
 
-var asdf;
 function addVehicles(new_vehicles) {
-	asdf = new_vehicles.response;
 	var route_id = new_vehicles.route_ids[0]; //TODO: generalize to multiple route_ids
 	if (typeof vehicles[route_id] === 'undefined') {
 		//this will break if I try to call getVehicles for 2 routes; one loaded and one not
