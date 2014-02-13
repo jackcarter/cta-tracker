@@ -34,6 +34,17 @@ function getStopInfoContent(stop_id, stop_name) {
 	return content;
 }
 
+function addUpdateButton(stop_id) {
+	var div_id = getDivId(stop_id)
+		, buttonId = 'button-' + stop_id;
+	$('#'+div_id).append($('<button/>', {
+		text: 'Update predictions'
+		, id: buttonId
+		, click: function(){getPredictions(stop_id);}
+	}));
+	refreshStopInfo(stop_id);
+}
+
 function openStopInfo(predictions) {
 	predictions = sortByRouteId(predictions);
 	var stop_id = predictions[0].stop_id
@@ -63,17 +74,6 @@ function openStopInfo(predictions) {
 
 function getPredictions(stop_id) {
 	Dajaxice.cta.get_predictions(openStopInfo, {'stop_ids':[stop_id]});
-}
-
-function addUpdateButton(stop_id) {
-	var div_id = getDivId(stop_id)
-		, buttonId = 'button-' + stop_id;
-	$('#'+div_id).append($('<button/>', {
-		text: 'Update predictions'
-		, id: buttonId
-		, click: function(){getPredictions(stop_id);}
-	}));
-	refreshStopInfo(stop_id);
 }
 
 function addRoute(routeId, routeName) {
@@ -244,49 +244,35 @@ function updateVehicle(newVehicle, oldVehicle) {
 	return oldVehicle;
 }
 
-function addOrUpdateVehicle(newVehicle) {
-	var route_id = newVehicle.route_id
-	, vehicleFound = false
-	, oldVehicleId;
-	
+function addOrUpdateVehicles(newVehicles, route_id) {
+	var i
+		, oldVehicleId
+		, vehicleFound;
+	asdf = newVehicles;
 	for (oldVehicleId in vehicles[route_id]) {
 		if (vehicles[route_id].hasOwnProperty(oldVehicleId)) {
-			//Skip prototype chain
-			//Update old vehicle if we already have this vehicle_id on this route
-			if (oldVehicleId === newVehicle.vehicle_id) {
-				vehicles[route_id][oldVehicleId] = updateVehicle(newVehicle, vehicles[route_id][oldVehicleId]);
-				vehicleFound = true;
+			vehicleFound = false;
+			for (i=0;i<newVehicles.length;i++) {
+				if (newVehicles[i].vehicle_id === oldVehicleId) {
+					vehicleFound = true;
+					break;
+				}
 			}
-			
+			if (vehicleFound) {
+				vehicles[route_id][oldVehicleId] = updateVehicle(newVehicles[i], vehicles[route_id][oldVehicleId]);
+				//Remove that vehicle:
+				newVehicles.splice(i,1);
+			} else {
+				//If the vehicle is not in the newVehicles array, remove it:
+				delete vehicles[newVehicles[i].vehicle_id];
+			}
 		}
 	}
-	//If this vehicle ID wasn't on the route last time we updated, we won't have found it
-	//So, let's add it as a new one
-	if (!vehicleFound) {
-		addVehicle(newVehicle);
-	}
-}
-
-function updateVehicles(newVehicles) {
-	var i;
-	
+	//Finally, if there are vehicles left in newVehicles,
+	//they weren't in the oldVehicles object. Add them.
 	for (i=0;i<newVehicles.length;i++) {
-		addOrUpdateVehicle(newVehicles[i]);
+		addVehicle(newVehicles[i]);
 	}
-}
-
-//TODO: Finish this
-function removeMissingVehicles(newVehicles, routeId) {
-	var oldIds = []
-	, newIds = []
-	, i;
-	for (i=0;i<vehicles[routeId].length;i++) {
-		oldIds.push(vehicles[routeId][i].vehicle_id);
-	}
-	for (i=0;i<newVehicles.length;i++) {
-		oldIds.push(newVehicles[i].vehicle_id);
-	}
-	vehicles[routeId] = $(vehicles[routeId]).not(newVehicles).get();
 }
 
 var asdf;
@@ -297,7 +283,7 @@ function addVehicles(new_vehicles) {
 		//this will break if I try to call getVehicles for 2 routes; one loaded and one not
 		vehicles[route_id] = {};
 	}
-	updateVehicles(new_vehicles.response, route_id);
+	addOrUpdateVehicles(new_vehicles.response, route_id);
 }
 
 function getVehicles(){
