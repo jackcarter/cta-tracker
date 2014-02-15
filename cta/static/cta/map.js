@@ -243,7 +243,7 @@ function updateVehicle(newVehicle, oldVehicle) {
 		var newIntermediateLatLngs = intermediateLatLngs.slice(1);
 		var newIntermediateHeadings = intermediateHeadings.slice(1);
 		if (newIntermediateLatLngs.length > 0) {
-			setTimeout(function() {
+			window.setTimeout(function() {
 				animate(marker, newIntermediateLatLngs, newIntermediateHeadings)
 			}, 10);
 		}
@@ -280,6 +280,7 @@ function addOrUpdateVehicles(newVehicles, route_id) {
 	for (i=0;i<newVehicles.length;i++) {
 		addVehicle(newVehicles[i]);
 	}
+	window.setTimeout(function(){getVehiclesForRoute(route_id);}, 1000*30);
 }
 
 function addVehicles(new_vehicles) {
@@ -291,9 +292,13 @@ function addVehicles(new_vehicles) {
 	addOrUpdateVehicles(new_vehicles.response, route_id);
 }
 
+function getVehiclesForRoute(route_id) {
+	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[route_id]});
+}
+
 function getVehicles(){
 	var route_id = $('#route-selector').val();
-	Dajaxice.cta.get_vehicles(addVehicles, {'route_ids':[route_id]})
+	getVehiclesForRoute(route_id);
 }
 
 function initialize() {
