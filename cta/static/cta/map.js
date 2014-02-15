@@ -66,13 +66,20 @@ function openStopInfo(predictions) {
 			text: route_id + ' ' + predictions[i].route_direction + ': ' + time_until + 'm'
 		}))
 	}
-	stopInfo.close();
 	stopInfo.setContent(content[0]);
-	stopInfo.open(map, marker);
-	window.setTimeout(function(){addUpdateButton(stop_id);}, 1000*60);
+	refreshStopInfo(stop_id);
+//	window.setTimeout(function(){addUpdateButton(stop_id);}, 1000*2);
+	stopInfo['stop_id'] = stop_id;
+	stopInfo['refreshTimeout'] = window.setTimeout(function(){getPredictions(stop_id);}, 1000*60);
+	google.maps.event.addListener(stopInfo,'closeclick',function(){
+	   window.clearTimeout(stopInfo['refreshTimeout']);
+	});
 }
 
 function getPredictions(stop_id) {
+	//stop infowindow from opening on old marker:
+	window.clearTimeout(stopInfo['refreshTimeout']);
+	
 	Dajaxice.cta.get_predictions(openStopInfo, {'stop_ids':[stop_id]});
 }
 
