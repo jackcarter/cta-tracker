@@ -141,14 +141,9 @@ function getStops(){
 function addPattern(data) {
 	var path = []
 		, latLng
-		, points = data.point
+		, points = data.points
 		, i
-		, line = new google.maps.Polyline({
-			path: path,
-			strokeColor: get_random_color(),
-			strokeOpacity: 0.5,
-			strokeWeight: 4
-	  	});
+		, line;
 
 	for (i=0; i<points.length; i++) {
 		if (points[i].type === stopTypeIndicator) {
@@ -158,6 +153,13 @@ function addPattern(data) {
 		path.push(latLng);
 	}
 	
+	line = new google.maps.Polyline({
+		path: path,
+		strokeColor: get_random_color(),
+		strokeOpacity: 0.5,
+		strokeWeight: 4
+  	});
+
 	line.setMap(map);
 }
 

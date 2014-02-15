@@ -146,7 +146,7 @@ class BusTracker(object):
 				'pattern_id'		:	self.parse_int(pattern.find('pid').text),
 				'length'			:	self.parse_int(pattern.find('ln').text),
 				'direction'			:	pattern.find('rtdir').text,
-				'point'				:	[parse_point(point) for point in pattern.findall('pt')],
+				'points'			:	[parse_point(point) for point in pattern.findall('pt')],
 			}
 		for pattern in root.findall('ptr'):
 			patterns.append(parse_pattern(pattern))
